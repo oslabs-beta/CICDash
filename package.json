@@ -4,7 +4,8 @@
   "description": "This name and description can be changed later.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,8 @@
     "express": "^4.18.3",
     "react": "^18.2.0",
     "react-router-dom": "^6.22.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
   }
 }
