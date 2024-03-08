@@ -1,4 +1,5 @@
-# .env
-# node_modules
-# .prettier.config.js
+.env
+node_modules
+.prettierrc
+package-lock.json
 
