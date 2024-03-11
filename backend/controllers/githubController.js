@@ -10,7 +10,6 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 // /auth/github/callback
 githubController.auth = async (req, res, next) => {
-  console.log('in githubController.auth');
   const requestToken = req.query.code;
   const authResponse = await axios({
     method: 'post',
@@ -25,17 +24,23 @@ githubController.auth = async (req, res, next) => {
   console.log('access_token:', authResponse.data.access_token);
   const access_token = authResponse.data.access_token;
 
-  // console.log('Getting user info from github API:')
-  // const apiResponse = await axios({
-  //   method: 'get',
-  //   url: `https://api.github.com/user`,
-  //   headers: {
-  //     Authorization: 'token ' + access_token,
-  //   },
-  // });
-  // console.log('apiResponse.data:', apiResponse.data);
+  console.log('------------------Getting user info from github API:')
+  const apiResponse = await axios({
+    method: 'get',
+    url: `https://api.github.com/user`,
+    headers: {
+      Authorization: 'token ' + access_token,
+    },
+  });
+  console.log('apiResponse.data:', apiResponse.data);
   return next();
 }
+
+//githubController.getRepos
+  //https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-the-authenticated-user
+  //get owners
+
+
 
 
 
