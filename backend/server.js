@@ -14,6 +14,10 @@ const authRoutes = require('./routes/authRoutes');
 
 app.use(express.json());
 app.use('/auth', authRoutes);
+app.use('/callback', (req, res) => {
+  console.log('callback activated');
+  console.log('code:', req.query.code);
+})
 
 
 
@@ -26,7 +30,7 @@ app.use((err, req, res, next) => {
     message: { err: `An error occurred ${err}` },
   };
   const errorObj = Object.assign({}, defaultErr, err);
-  console.log(errorObj.log);
+  // console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
 });
 
