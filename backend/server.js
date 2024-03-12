@@ -14,7 +14,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const MONGO_URI = process.env.MONGO_URI;
 console.log(
   `* Reading protected variables \n  - PORT: ${PORT}\n  - APP_ID: ${APP_ID}\n  - PRIVATE_KEY: ${PRIVATE_KEY}\n  - MONGO_URI: ${MONGO_URI}`,
-);
+); // CL*
 
 // Route files
 const authRoutes = require('./routes/authRoutes');
