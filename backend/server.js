@@ -23,11 +23,10 @@ const authRoutes = require('./routes/authRoutes');
 app.use(express.json());
 
 // Connect to Mongo DB
-// TODO: Once database is set up, define MONGO_URI in .env file and uncomment below
-// mongoose
-//   .connect(MONGO_URI)
-//   .then(() => console.log('* Connected to Mongo DB')) // CL
-//   .catch(err => console.log(err));
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log('* Connected to Mongo DB')) // CL*
+  .catch(err => console.log(err));
 
 // Route handlers
 app.use('/auth', authRoutes);
@@ -44,11 +43,11 @@ app.use((err, req, res, next) => {
     message: { err: `An error occurred ${err}` },
   };
   const errorObj = Object.assign({}, defaultErr, err);
-  console.log(`> ${errorObj.log} -> ${errorObj.message.err}`); // CL
+  console.log(`> ${errorObj.log} -> ${errorObj.message.err}`); // CL*
   return res.status(errorObj.status).json(errorObj.message);
 });
 
 // Listen for incoming requests
 app.listen(PORT, () => {
-  console.log(`* Server listening @ http://localhost:${PORT}`); // CL
+  console.log(`* Server listening @ http://localhost:${PORT}`); // CL*
 });
