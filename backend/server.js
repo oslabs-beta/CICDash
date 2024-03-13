@@ -17,7 +17,8 @@ console.log(
 ); // CL*
 
 // Route files
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes.js');
+const githubRoutes = require('./routes/githubRoutes.js')
 
 // Handle parsing the JSON body of every req
 app.use(express.json());
@@ -30,6 +31,7 @@ mongoose
 
 // Route handlers
 app.use('/auth', authRoutes);
+app.use('/api/github', githubRoutes);
 // app.use('/callback', (req, res) => {
 //   console.log('callback activated');
 //   console.log('code:', req.query.code);
