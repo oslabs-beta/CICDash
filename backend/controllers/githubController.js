@@ -48,44 +48,49 @@ githubController.getRuns = async (req, res, next) => {
 
   const runsData = await axios({
     method: 'get',
+    owner: owner,
+    repo: repo,
     url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
     headers: {
-      Authorization: 'Bearer Need to Update',
+      Authorization: 'Bearer XXXXX',
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
 
   // Store all the run id's in an array
   const runs = [];
-  runsData.data.forEach(run => {
-    runs.push(run[id]);
+  // console.log('runsData.data.workflow_runs: ', runsData.data.workflow_runs);
+  runsData.data.workflow_runs.forEach(run => {
+    runs.push(run.id);
   });
 
   // Pass run id's array on in middelware chain
-  // console.log('* runs: ', runs);
+  console.log('* runs: ', runs);
   res.locals.runs = runs;
+  return next();
 };
 
-// githubController.getJobs = (req, res, next) => {
-//   const {owner, repo} = req.body;
-//   const { runs } = res.locals;
-//   // Store response from GET request to Github API for jobs
-//   const jobs = [];
-//   runs.forEach(async run =>
-//     jobs.push(
-//       await axios({
-//         method: 'get',
-//         url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs',
-//         headers: {
-//           // Authorization: 'token ' + access_token,
-//           'X-GitHub-Api-Version': '2022-11-28',
-//         }
-//       })
+githubController.getJobs = async (req, res, next) => {
+  const { owner, repo } = req.body;
+  const { runs } = res.locals;
+  // Store response from GET request to Github API for jobs
+  const jobs = [];
+  for (const run of runs) {
+    const jobData = await axios({
+      method: 'get',
+      url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs`,
+      headers: {
+        Authorization: 'Bearer XXXXXXX',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+    // console.log('jobData.data: ', jobData.data);
+    jobs.push(jobData.data.jobs);
+  }
 
-//   );
-
-//   console.log('* jobs: ', jobs);
-//   res.locals.jobs = jobs;
-// };
+  console.log('* jobs: ', jobs);
+  res.locals.jobs = jobs;
+  return next();
+};
 
 module.exports = githubController;

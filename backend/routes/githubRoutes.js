@@ -10,8 +10,8 @@ router.get('/getRuns', githubController.getRuns, (req, res) => {
 });
 
 // Handle GET requests to '/api/github/getJobs' endpoint
-// router.get('/getJobs', githubController.getRuns, githubController.getJobs, (req, res) => {
-//   return res.status(200).json(res.locals.jobs);
-// });
+router.get('/getJobs', githubController.getRuns, githubController.getJobs, (req, res) => {
+  return res.status(200).json(res.locals.jobs);
+});
 
 module.exports = router;
