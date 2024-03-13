@@ -14,6 +14,7 @@ const githubController = {};
 // /auth/github/callback
 githubController.auth = async (req, res, next) => {
   const requestToken = req.query.code;
+
   const authResponse = await axios({
     method: 'post',
     url: `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${requestToken}`,
@@ -52,7 +53,7 @@ githubController.getRuns = async (req, res, next) => {
     repo: repo,
     url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
     headers: {
-      Authorization: 'Bearer XXXXX',
+      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
@@ -76,6 +77,27 @@ githubController.getJobs = async (req, res, next) => {
   // Store response from GET request to Github API for jobs
   const jobs = [];
   for (const run of runs) {
+    const jobData = await axios({
+      method: 'get',
+      url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs`,
+      headers: {
+        Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+
+    jobs.push(jobData.data.jobs);
+    console.log('jobs: ', jobs);
+    res.locals.jobs = jobs;
+  }
+  return next();
+};
+
+githubController.saveJobs = async (req, res, next) => {
+  const { owner, repo } = req.body;
+  const { jobs } = res.locals;
+  // Store response from GET request to Github API for jobs
+  for (const job of jobs) {
     const jobData = await axios({
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs`,

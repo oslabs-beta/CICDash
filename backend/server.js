@@ -18,7 +18,7 @@ console.log(
 
 // Route files
 const authRoutes = require('./routes/authRoutes.js');
-const githubRoutes = require('./routes/githubRoutes.js')
+const githubRoutes = require('./routes/githubRoutes.js');
 
 // Handle parsing the JSON body of every req
 app.use(express.json());
