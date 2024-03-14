@@ -1,9 +1,12 @@
 import React from 'react';
+import background from '/frontend/assets/5156046.jpg';
+import '/frontend/src/stylesheet.css'; 
+
 
 const Home = () => {
   return (
-    <div className='flex-container'>
-      <h1>CICDEEZ</h1>
+    <div className='flex-container' style={{ backgroundImage: `url(${background})` }}>
+      <h1 className='logo' >CICDEEZ</h1>
       <a href='https://github.com/login/oauth/authorize?client_id=Iv1.cdabdacb14c5030c'>
         <button
           type='button'
