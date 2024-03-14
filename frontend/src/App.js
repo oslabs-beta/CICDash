@@ -1,10 +1,10 @@
 import React from 'react';
 import Home from './pages/Home';
+import './stylesheet.css';
 
 function App() {
   return (
     <>
-      <p>This is a react element</p>
       <Home />
     </>
   );
