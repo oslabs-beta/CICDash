@@ -30,6 +30,7 @@ githubController.auth = async (req, res, next) => {
 
   const access_token = authResponse.data.access_token;
   console.log('  - Access token:', access_token);
+  res.locals.authResponse_data = authResponse.data;
 
   // GET request to Github api for user data
   const apiResponse = await axios({
