@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -20,8 +21,9 @@ console.log(
 const authRoutes = require('./routes/authRoutes.js');
 const githubRoutes = require('./routes/githubRoutes.js');
 
-// Handle parsing the JSON body of every req
+// Handle parsing the JSON body of every req and parsing the cookies of every req
 app.use(express.json());
+app.use(cookieParser());
 
 // Connect to Mongo DB
 mongoose

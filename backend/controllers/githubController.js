@@ -51,8 +51,12 @@ githubController.getRuns = async (req, res, next) => {
   console.log(`* Getting all run id's...`); // CL*
 
   // Store response from GET request to Github API for runs
-  const { owner, repo } = req.body;
+  // const { owner, repo } = req.body;
+  const owner = 'ptri-13-cat-snake';
+  const repo = 'unit-12-testing-gha';
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
+
+  // console.log('  - ');
 
   const runsData = await axios({
     method: 'get',
@@ -60,7 +64,7 @@ githubController.getRuns = async (req, res, next) => {
     repo: repo,
     url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
     headers: {
-      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+      Authorization: `token ghu_to9hQQ9bODb4yHwpSNhGSVCMXERwmw38PcpN`,
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
@@ -81,7 +85,9 @@ githubController.getRuns = async (req, res, next) => {
 githubController.getJobs = async (req, res, next) => {
   console.log('* Getting all job metrics...'); // CL*
 
-  const { owner, repo } = req.body;
+  // const { owner, repo } = req.body;
+  const owner = 'ptri-13-cat-snake';
+  const repo = 'unit-12-testing-gha';
   const { runs } = res.locals;
 
   // Store response from GET request to Github API for jobs
@@ -91,7 +97,7 @@ githubController.getJobs = async (req, res, next) => {
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs`,
       headers: {
-        Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+        Authorization: `Bearer ${req.cookies.access_token}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
     });
@@ -112,7 +118,7 @@ githubController.saveJobs = async (req, res, next) => {
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${run}/jobs`,
       headers: {
-        Authorization: 'Bearer XXXXXXX',
+        Authorization: 'Bearer ${req.cookies.access_token}',
         'X-GitHub-Api-Version': '2022-11-28',
       },
     });
