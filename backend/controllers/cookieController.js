@@ -12,8 +12,9 @@ cookieController.setCookie = async (req, res, next) => {
   console.log('  - Access token pulled from res.locals: ', access_token);
 
   res.cookie('access_token', access_token);
-  console.log('  - Access token cookie set!');
 
+  console.log('  - Access token cookie set!');
+  console.log('res.cookie after setting cookie: ', res.getHeaders());
   return next();
   // try {
   //   // Get the user _id and send it to the frontend as a cookie

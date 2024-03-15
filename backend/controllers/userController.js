@@ -20,11 +20,22 @@ userController.registerUser = async (req, res, next) => {
   const access_token = res.locals.authResponse_data.access_token;
   const refresh_token = res.locals.authResponse_data.refresh_token;
 
+  console.log('access_token from register user: ', access_token);
+
   // Handle existing username
   const exists = await User.findOne({ username: username });
   if (exists) {
     console.log('  - User object already exists in database, update tokens'); // CL*\
-    // TODO: Add logic to find one and update the existing user in the database
+
+    const updatedUser = await User.findOneAndUpdate(
+      { username: username },
+      {
+        access_token: access_token,
+        refresh_token: refresh_token,
+      },
+      { new: true },
+    );
+    console.log(' - updatedUser: ', updatedUser);
     return next();
   }
 

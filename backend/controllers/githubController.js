@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-
+const { Octokit } = require('@octokit/rest');
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -10,6 +10,8 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 // });
 
 const githubController = {};
+
+////////////////////////////////////////////////////////
 
 // /auth/github/callback
 githubController.auth = async (req, res, next) => {
@@ -47,6 +49,8 @@ githubController.auth = async (req, res, next) => {
   return next();
 };
 
+////////////////////////////////////////////////////////
+
 githubController.getRuns = async (req, res, next) => {
   console.log(`* Getting all run id's...`); // CL*
 
@@ -57,30 +61,55 @@ githubController.getRuns = async (req, res, next) => {
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
 
   // console.log('  - ');
+  console.log('req.cookies: ', req.cookies.access_token);
 
-  const runsData = await axios({
-    method: 'get',
-    owner: owner,
-    repo: repo,
-    url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
-    headers: {
-      Authorization: `token ghu_to9hQQ9bODb4yHwpSNhGSVCMXERwmw38PcpN`,
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  });
+  try {
+    const octokit = new Octokit({
+      auth: req.cookies.access_token,
+      baseUrl: 'https://api.github.com',
+    });
 
-  // Store all the run id's in an array
-  const runs = [];
-  // console.log('runsData.data.workflow_runs: ', runsData.data.workflow_runs);
-  runsData.data.workflow_runs.forEach(run => {
-    runs.push(run.id);
-  });
+    const runsData = await octokit.request('GET /repos/{owner}/{repo}/actions/runs', {
+      owner: owner,
+      repo: repo,
+      // job_id: 'JOB_ID',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
 
-  // Pass run id's array on in middelware chain
-  console.log(`  - 'runs' array: `, runs); // CL*
-  res.locals.runs = runs;
-  return next();
+    // const runsData = await axios({
+    //   method: 'get',
+    //   params: {
+    //     owner: owner,
+    //     repo: repo,
+    //   },
+    //   url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
+    //   headers: {
+    //     Authorization: `Bearer ${req.cookies.access_token}`,
+    //     'X-GitHub-Api-Version': '2022-11-28',
+    //   },
+    //   withCredentials: true,
+    // });
+
+    // Store all the run id's in an array
+    const runs = [];
+    // console.log('runsData.data.workflow_runs: ', runsData.data.workflow_runs);
+    runsData.data.workflow_runs.forEach(run => {
+      runs.push(run.id);
+    });
+
+    // Pass run id's array on in middelware chain
+    console.log(`  - 'runs' array: `, runs); // CL*
+    res.locals.runs = runs;
+    return next();
+  } catch (err) {
+    console.log('error: ' + err.message);
+    return next(err);
+  }
 };
+
+////////////////////////////////////////////////////////
 
 githubController.getJobs = async (req, res, next) => {
   console.log('* Getting all job metrics...'); // CL*
@@ -100,6 +129,7 @@ githubController.getJobs = async (req, res, next) => {
         Authorization: `Bearer ${req.cookies.access_token}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
+      withCredentials: true,
     });
 
     jobs.push(jobData.data.jobs);
@@ -108,6 +138,8 @@ githubController.getJobs = async (req, res, next) => {
   }
   return next();
 };
+
+////////////////////////////////////////////////////////
 
 githubController.saveJobs = async (req, res, next) => {
   const { owner, repo } = req.body;
@@ -124,6 +156,7 @@ githubController.saveJobs = async (req, res, next) => {
     });
     // console.log('  - jobData.data: ', jobData.data); // CL*
     jobs.push(jobData.data.jobs);
+    
   }
 
   console.log('  - Jobs: ', jobs); // CL*

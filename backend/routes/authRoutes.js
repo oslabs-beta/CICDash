@@ -13,7 +13,7 @@ router.use(
   cookieController.setCookie,
   userController.registerUser,
   githubController.getRuns,
-  // githubController.getJobs,
+  githubController.getJobs,
   (req, res) => res.json('/github route finished'),
 );
 
