@@ -60,8 +60,7 @@ githubController.getRuns = async (req, res, next) => {
   const repo = 'unit-12-testing-gha';
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
 
-  // console.log('  - ');
-  console.log('req.cookies: ', req.cookies.access_token);
+  console.log('  - req.cookies: ', req.cookies.access_token);
 
   try {
     const octokit = new Octokit({
@@ -156,7 +155,6 @@ githubController.saveJobs = async (req, res, next) => {
     });
     // console.log('  - jobData.data: ', jobData.data); // CL*
     jobs.push(jobData.data.jobs);
-    
   }
 
   console.log('  - Jobs: ', jobs); // CL*

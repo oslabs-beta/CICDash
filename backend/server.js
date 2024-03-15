@@ -41,10 +41,6 @@ mongoose
 // Route handlers
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
-// app.use('/callback', (req, res) => {
-//   console.log('callback activated');
-//   console.log('code:', req.query.code);
-// })
 
 // Global error handler
 app.use((err, req, res, next) => {
