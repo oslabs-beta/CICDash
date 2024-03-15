@@ -12,9 +12,12 @@ router.use(
   githubController.auth,
   cookieController.setCookie,
   userController.registerUser,
-  githubController.getRuns,
-  githubController.getJobs,
-  (req, res) => res.json('/github route finished'),
-);
+  (req, res, next) => {
+    res.redirect('http://localhost:8080/results');
+    return next();
+  }
+)
+
+
 
 module.exports = router;
