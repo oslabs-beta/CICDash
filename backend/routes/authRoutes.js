@@ -15,9 +15,7 @@ router.use(
   (req, res, next) => {
     res.redirect('http://localhost:8080/results');
     return next();
-  }
-)
-
-
+  },
+);
 
 module.exports = router;

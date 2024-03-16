@@ -1,13 +1,10 @@
 require('dotenv').config();
 const axios = require('axios');
 const { Octokit } = require('@octokit/rest');
+
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-// const app = new App({
-//   appId: process.env.CLIENT_ID,
-//   privateKey: process.env.CLIENT_SECRET,
-// });
 
 const githubController = {};
 
@@ -60,8 +57,7 @@ githubController.getRuns = async (req, res, next) => {
   const repo = 'unit-12-testing-gha';
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
 
-  // console.log('  - ');
-  console.log('req.cookies: ', req.cookies.access_token);
+  console.log('  - req.cookies: ', req.cookies.access_token); // CL*
 
   try {
     const octokit = new Octokit({
@@ -156,7 +152,7 @@ githubController.saveJobs = async (req, res, next) => {
     });
     // console.log('  - jobData.data: ', jobData.data); // CL*
     jobs.push(jobData.data.jobs);
-    
+
   }
 
   console.log('  - Jobs: ', jobs); // CL*

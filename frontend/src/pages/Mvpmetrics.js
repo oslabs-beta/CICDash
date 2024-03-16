@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 const tempData = [
   {
     id: 22154564535,
@@ -99,60 +98,48 @@ const tempData = [
 ];
 
 function displayKeyValuePairs(obj) {
-    return (
-        <ul>
-            {Object.keys(obj).map((key) => (
-                <li key={key}>
-                    <strong>{key}: </strong>
-                    {Array.isArray(obj[key]) || typeof obj[key] === 'object'
-                        ? displayKeyValuePairs(obj[key])
-                        : obj[key]}
-                </li>
-            ))}
-        </ul>
-    );
+  return (
+    <ul>
+      {Object.keys(obj).map(key => (
+        <li key={key}>
+          <strong>{key}: </strong>
+          {Array.isArray(obj[key]) || typeof obj[key] === 'object'
+            ? displayKeyValuePairs(obj[key])
+            : obj[key]}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
-
-
-
-
-
 const Mvpmetrics = () => {
-  // const [metrics, setMetrics] = useState(['Loading Metrics...']);
-  //   useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get('/api/getmetrics');
-  //       setMetrics(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
+  const [metrics, setMetrics] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const getjobs = await axios.get('/api/github/getjobs', {
+          //'http://localhost:3000/api/github/getjobs'
+          withCredentials: true,
+        });
+        console.log('getjobs:', getjobs.data);
+        setMetrics(getjobs.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
-  //   fetchData();
-  // }, []);
-
-  // return (
-  //   <div className='flex-container'>
-  //     <p>{{Object.keys(yourObject).map(function(key) { return <div>Key: {key}, Value: {yourObject[key]}</div>; })}}</p>
-  //   </div>
-  // );
-
-
-
-return (
-        <div>
-            {tempData.map((item, index) => (
-                <div key={index}>
-                    <h2>Item {index + 1}</h2>
-                    {displayKeyValuePairs(item)}
-                </div>
-            ))}
+  return (
+    <div>
+      {metrics.map((item, index) => (
+        <div key={index + 1}>
+          <h2>Workflow Run {index + 1}</h2>
+          {displayKeyValuePairs(item)}
         </div>
-    );
-
-
+      ))}
+    </div>
+  );
 };
 
 export default Mvpmetrics;
