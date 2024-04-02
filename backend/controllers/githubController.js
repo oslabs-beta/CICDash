@@ -128,7 +128,20 @@ githubController.getJobs = async (req, res, next) => {
       withCredentials: true,
     });
 
-    jobs.push(jobData.data.jobs);
+    // jobs.push(jobData.data.jobs);
+    const ownerExists = await User.findOne({
+      username: req.cookies.username,
+      owner: owner,
+    });
+    if (ownerExists) {
+      const repoExists = await User.findOne({
+        username: req.cookies.username,
+        owner: owner,
+      });
+      if (repoExists) {
+      }
+    }
+
     console.log('jobs: ', jobs);
     res.locals.jobs = jobs;
   }
@@ -152,7 +165,6 @@ githubController.saveJobs = async (req, res, next) => {
     });
     // console.log('  - jobData.data: ', jobData.data); // CL*
     jobs.push(jobData.data.jobs);
-
   }
 
   console.log('  - Jobs: ', jobs); // CL*

@@ -46,9 +46,25 @@ const ownerSchema = new Schema({
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
   refresh_token: { type: String, required: true },
-  owner: [ownerSchema],
+  owner: {type: Array}
 });
 
 const User = mongoose.model('user', userSchema);
+const Run = mongoose.model('run', ownerSchema);
 
-module.exports = User;
+module.exports = { User, Run };
+
+
+{user: SDASDAS
+refresh:
+owner: [
+  {
+  owner: XXX
+  repos: YYYY
+  
+
+  },
+  {repo: 2,
+    
+  }
+}}
