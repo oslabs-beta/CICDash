@@ -8,10 +8,13 @@ const cookieController = {};
 cookieController.setCookie = async (req, res, next) => {
   console.log('* Setting session cookie...');
 
+  const username = res.locals.apiResponse_data.login;
   const access_token = res.locals.authResponse_data.access_token;
+  const refresh_token = res.locals.authResponse_data.refresh_token;
   console.log('  - Access token pulled from res.locals: ', access_token);
 
   res.cookie('access_token', access_token);
+  res.cookie('username', username);
 
   console.log('  - Access token cookie set!');
   console.log('res.cookie after setting cookie: ', res.getHeaders());

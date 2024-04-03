@@ -117,7 +117,7 @@ const Mvpmetrics = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getjobs = await axios.get('http://localhost:3000/api/github/getjobs', {
+        const getjobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
           //'http://localhost:3000/api/github/getjobs'
           withCredentials: true,
         });

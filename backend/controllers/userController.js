@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-const User = require('../models/userModel');
+const { User } = require('../models/userModel');
 
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -20,7 +20,7 @@ userController.registerUser = async (req, res, next) => {
   const access_token = res.locals.authResponse_data.access_token;
   const refresh_token = res.locals.authResponse_data.refresh_token;
 
-  console.log('access_token from register user: ', access_token);
+  console.log('  - access_token from register user: ', access_token);
 
   // Handle existing username
   const exists = await User.findOne({ username: username });
@@ -29,10 +29,7 @@ userController.registerUser = async (req, res, next) => {
 
     const updatedUser = await User.findOneAndUpdate(
       { username: username },
-      {
-        access_token: access_token,
-        refresh_token: refresh_token,
-      },
+      { refresh_token: refresh_token },
       { new: true },
     );
     console.log(' - updatedUser: ', updatedUser);
@@ -42,9 +39,8 @@ userController.registerUser = async (req, res, next) => {
   // Create new user object in database
   const user = await User.create({
     username,
-    access_token,
     refresh_token,
-    jobs: [],
+    runs: [],
   });
   console.log('  - New user object added to database!');
 
