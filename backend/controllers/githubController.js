@@ -50,7 +50,7 @@ githubController.auth = async (req, res, next) => {
 ////////////////////////////////////////////////////////
 
 githubController.getRunIds = async (req, res, next) => {
-  console.log(`* Getting all run id's...`); // CL*
+  console.log(`* Getting all run ids...`); // CL*
 
   // const { owner, repo } = req.body;
   const owner = 'ptri-13-cat-snake';
@@ -83,11 +83,50 @@ githubController.getRunIds = async (req, res, next) => {
     console.log(`  - 'runs' array: `, runs); // CL*
 
     // Pass run id's array on in middelware chain
-    res.locals.runIds = runs;
+    res.locals.allRunIds = runs;
     return next();
   } catch (err) {
     console.log('error: ' + err.message);
     return next(err);
+  }
+};
+
+////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////
+
+githubController.getUniqueRunIds = async (req, res, next) => {
+  console.log(`* Checking if run ids are in database...`); // CL*
+
+  // const { owner, repo } = req.body;
+  const owner = 'ptri-13-cat-snake';
+  const repo = 'unit-12-testing-gha';
+  const { allRunIds } = res.locals;
+
+  try {
+    // Query the database to check if the username has a runs entry with any of the run IDs
+    const existingRuns = await User.find(
+      {
+        username: req.cookies.username,
+        runs: { $elemMatch: { run_id: { $in: allRunIds } } },
+      },
+      { 'runs.run_id': 1 },
+    );
+
+    // Extract existing run IDs from the query result
+    const existingRunIds = existingRuns.flatMap(user => user.runs.map(run => run.run_id));
+
+    // Filter out unique run IDs
+    const uniqueRunIds = allRunIds.filter(runId => !existingRunIds.includes(runId));
+    console.log('uniqueRunIds: ', uniqueRunIds);
+
+    // Update res.locals.runIds with unique run IDs
+    res.locals.runIds = uniqueRunIds;
+
+    console.log('  - Adding unique run ids to runs array');
+    return next();
+  } catch (error) {
+    console.error('Error checking run ids:', error);
   }
 };
 
@@ -188,33 +227,6 @@ githubController.saveRuns = async (req, res, next) => {
         runner_group_id: runner_group_id,
         runner_group_name: runner_group_name,
       };
-
-      const existingUser = await User.findOne({
-        username: req.cookies.username,
-      });
-
-      // Check if user exists in database
-      if (existingUser) {
-        console.log('  - User exists in database!');
-
-        let runExists = false;
-
-        for (const run of existingUser.runs) {
-          // If the run.run_id = passed in run.run_id
-          if (run.run_id === run_id) {
-            runExists = true;
-            console.log('  - Run exists in User runs array');
-          }
-        }
-
-        if (!runExists) {
-          await User.findOneAndUpdate(
-            { username: req.cookies.username },
-            { $addToSet: { runs: runData } },
-          );
-          console.log('  - User runs array updated!');
-        }
-      }
     }
   }
 

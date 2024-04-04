@@ -18,6 +18,7 @@ router.get('/getRuns', githubController.getRunIds, githubController.getRuns, (re
 router.get(
   '/saveRuns',
   githubController.getRunIds,
+  githubController.getUniqueRunIds,
   githubController.getRuns,
   githubController.saveRuns,
   (req, res) => {
