@@ -59,7 +59,8 @@ githubController.getRunIds = async (req, res, next) => {
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
   console.log('  - Access Token from Cookies: ', req.cookies.access_token); // CL*
 
-  // GET request to GH API to get runs data
+  console.log('  - req.cookies: ', req.cookies.access_token);
+
   try {
     const octokit = new Octokit({
       auth: req.cookies.access_token,
