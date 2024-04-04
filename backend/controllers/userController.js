@@ -52,6 +52,7 @@ userController.registerUser = async (req, res, next) => {
   return next();
 };
 
+
 // userController.getToken = async (req, res, next) => {
 //   console.log('* Getting access token from database...'); // CL*
 

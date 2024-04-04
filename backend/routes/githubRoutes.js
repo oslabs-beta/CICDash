@@ -10,8 +10,16 @@ router.get('/getruns', githubController.getRuns, (req, res) => {
 });
 
 // Handle GET requests to '/api/github/getjobs' endpoint
-router.get('/getjobs', githubController.getRuns, githubController.getJobs, (req, res) => {
-  return res.status(200).json(res.locals.jobs);
-});
+
+// ***4/1/2024 adding middleware to grab owner and repo from frontend
+router.get(
+  '/getjobs', githubController.getRuns,
+  githubController.getJobs,
+  (req, res) => {
+    return res.status(200).json(res.locals.jobs);
+  },
+);
+
+// adding middleware to grab owner and repo from frontend
 
 module.exports = router;

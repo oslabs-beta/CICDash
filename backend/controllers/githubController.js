@@ -52,9 +52,11 @@ githubController.getRuns = async (req, res, next) => {
   console.log(`* Getting all run id's...`); // CL*
 
   // Store response from GET request to Github API for runs
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const { owner, repo } = req.body;
+  // on mvp metrics create 2 fields for owner and repo button to grab the fields then send it as the body when it makes that git request
+
+  // const owner = 'ptri-13-cat-snake';
+  // const repo = 'unit-12-testing-gha';
   console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
 
   console.log('  - req.cookies: ', req.cookies.access_token); // CL*
@@ -110,9 +112,9 @@ githubController.getRuns = async (req, res, next) => {
 githubController.getJobs = async (req, res, next) => {
   console.log('* Getting all job metrics...'); // CL*
 
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const { owner, repo } = req.body;
+  // const owner = 'ptri-13-cat-snake';
+  // const repo = 'unit-12-testing-gha';
   const { runs } = res.locals;
 
   // Store response from GET request to Github API for jobs
@@ -159,5 +161,14 @@ githubController.saveJobs = async (req, res, next) => {
   res.locals.jobs = jobs;
   return next();
 };
+
+githubController.getOwnerAndRepo = (req, res, next) => {
+  const { owner, repo } = req.body;
+  res.locals.owner = owner;
+  res.locals.repo = repo;
+  return next();
+}
+
+
 
 module.exports = githubController;
