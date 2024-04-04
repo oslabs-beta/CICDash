@@ -148,4 +148,13 @@ githubController.getJobs = async (req, res, next) => {
   }
 };
 
+githubController.getOwnerAndRepo = (req, res, next) => {
+  const { owner, repo } = req.body;
+  res.locals.owner = owner;
+  res.locals.repo = repo;
+  return next();
+}
+
+
+
 module.exports = githubController;
