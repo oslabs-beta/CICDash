@@ -73,13 +73,17 @@ export const pieData = {
   labels: ['Failure', 'Success'],
   datasets: [
     {
-      label: 'Total Workflow Attempts',
+      label: 'Lifetime Workflow Attempts',
       data: [12, 19],
       backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
       borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
       borderWidth: 1,
     },
   ],
+};
+
+export const pieOptions = {
+  aspectRatio: 0.5,
 };
 
 //Horizontal Bar Options
@@ -118,14 +122,16 @@ export const horizBarData = {
 const Mvpmetrics = () => {
   return (
     <>
-      <div>
-        <Bar options={options} data={data} />
-      </div>
-      <div>
-        <Pie data={pieData} />
-      </div>
-      <div>
-        <Bar options={horizBarOptions} data={horizBarData} />
+      <div className={'grid-container'}>
+        <div className={'viz-a'}>
+          <Bar options={options} data={data} />
+        </div>
+        <div className={'viz-b'}>
+          <Pie data={pieData} />
+        </div>
+        <div className={'viz-c'}>
+          <Bar options={horizBarOptions} data={horizBarData} />
+        </div>
       </div>
     </>
   );
