@@ -120,6 +120,23 @@ export const horizBarData = {
 };
 
 const Mvpmetrics = () => {
+  const [metrics, setMetrics] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const getjobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
+          //'http://localhost:3000/api/github/getjobs'
+          withCredentials: true,
+        });
+        console.log('getjobs:', getjobs.data);
+        setMetrics(getjobs.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <>
       <div className={'grid-container'}>
