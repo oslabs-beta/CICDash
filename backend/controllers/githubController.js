@@ -1,7 +1,5 @@
 require('dotenv').config();
 const axios = require('axios');
-const { Octokit } = require('@octokit/rest');
-const { User } = require('../models/userModel');
 
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -9,81 +7,85 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const githubController = {};
 
-////////////////////////////////////////////////////////
-
-// /auth/github/callback
+// Authorize user via Github to log in
 githubController.auth = async (req, res, next) => {
-  console.log('* Authorizing login and granting access token...');
+  console.log('* Authorizing login and pulling user data from GitHub...');
 
-  // Grab request token generated at 'login with Github'
-  const requestToken = req.query.code;
-  // POST request to Github api for access token
+  // Grab Authorization Code provided by GitHub after the user logs in w/ GitHub
+  const authCode = req.query.code;
+
+  // POST request to Github api using Client ID, Client Credentials, and Authorization Code
   const authResponse = await axios({
     method: 'post',
-    url: `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${requestToken}`,
+    url: `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}`,
     // Set the content type header, so that we get the response in JSON
     headers: {
       accept: 'application/json',
     },
   });
-  // console.log('  - authResponse.data:', authResponse.data); // CL*
 
-  const access_token = authResponse.data.access_token;
-  console.log('  - Access token:', access_token);
-  res.locals.authResponse_data = authResponse.data;
+  // Pass on the authentication data sent back by Github (ie Access Token, Refresh Token)
+  res.locals.authResponseData = authResponse.data;
+  console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
 
-  // GET request to Github api for user data
+  // Grab Access Token from authentication data sent back by Github
+  const accessToken = authResponse.data.access_token;
+  // console.log('  - Access token:', accessToken); // CL*
+
+  // GET request to Github api for user data using Access Token
   const apiResponse = await axios({
     method: 'get',
     url: `https://api.github.com/user`,
     headers: {
-      Authorization: 'token ' + access_token,
+      Authorization: 'token ' + accessToken,
     },
   });
-  // console.log('  - apiResponse.data:', apiResponse.data); // CL*
-  console.log('  - Access granted!');
 
-  res.locals.apiResponse_data = apiResponse.data;
+  // Pass on the user data sent back by Github (ie Username)
+  res.locals.apiResponseData = apiResponse.data;
+  console.log('  - User data sent back by Github:', apiResponse.data); // CL*
+
   return next();
 };
 
-////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------------------------------------------
 
+// Get all of the user's workflow run ids for specified repo
 githubController.getRunIds = async (req, res, next) => {
-  console.log(`* Getting all run ids...`); // CL*
+  console.log(`* Getting all user's workflow runs id's...`); // CL*
 
+  // Grab owner and repo from the request
   // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const owner = 'ptri-13-cat-snake'; // HARDCODE
+  const repo = 'unit-12-testing-gha'; // HARDCODE
+  console.log('  - Owner pulled from request object: ', owner);
+  console.log('  - Repo pulled from request object: ', repo);
 
-  console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
-  console.log('  - Access Token from Cookies: ', req.cookies.access_token); // CL*
-
-  // GET request to GH API to get runs data
   try {
-    const octokit = new Octokit({
-      auth: req.cookies.access_token,
-      baseUrl: 'https://api.github.com',
-    });
+    // Grab Access Token from cookies
+    const accessToken = req.cookies.access_token;
+    console.log('  - Access Token read from cookies: ', accessToken); // CL*
 
-    const runsData = await octokit.request('GET /repos/{owner}/{repo}/actions/runs', {
-      owner: owner,
-      repo: repo,
-      // job_id: 'JOB_ID',
+    // GET request to Github api for user runs data using Access Token
+    const apiResponse = await axios({
+      method: 'get',
+      url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
       headers: {
+        Authorization: 'token ' + accessToken,
         'X-GitHub-Api-Version': '2022-11-28',
       },
     });
+    // console.log('  - apiResponse.data.workflow_runs: ', apiResponse.data.workflow_runs); // CL*
 
-    const runs = [];
-    // Iterate through each run  and add it's id to 'runs' array
-    runsData.data.workflow_runs.forEach(run => {
-      runs.push(run.id);
+    // Iterate through each run and add it's id to 'runs' array
+    const runIds = [];
+    apiResponse.data.workflow_runs.forEach(runObj => {
+      runIds.push(runObj.id);
     });
-    console.log(`  - 'runs' array: `, runs); // CL*
+    console.log(`  - All user's workflow run ids: `, runIds); // CL*
 
     // Pass run id's array on in middelware chain
-    res.locals.allRunIds = runs;
+    res.locals.allRunIds = runIds;
     return next();
   } catch (err) {
     console.log('error: ' + err.message);
@@ -91,145 +93,52 @@ githubController.getRunIds = async (req, res, next) => {
   }
 };
 
-////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------------------------------------------
 
-////////////////////////////////////////////////////////
+// Get all the jobs data associated w/ each workflow run
+githubController.getJobs = async (req, res, next) => {
+  console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
 
-githubController.getUniqueRunIds = async (req, res, next) => {
-  console.log(`* Checking if run ids are in database...`); // CL*
-
+  // Grab owner and repo from the request
   // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
-  const { allRunIds } = res.locals;
+  const owner = 'ptri-13-cat-snake'; // HARDCODE
+  const repo = 'unit-12-testing-gha'; // HARDCODE
+  console.log('  - Owner pulled from request object: ', owner);
+  console.log('  - Repo pulled from request object: ', repo);
 
-  try {
-    // Query the database to check if the username has a runs entry with any of the run IDs
-    const existingRuns = await User.find(
-      {
-        username: req.cookies.username,
-        runs: { $elemMatch: { run_id: { $in: allRunIds } } },
-      },
-      { 'runs.run_id': 1 },
-    );
+  // Grab run ids array passed from prior middleware
+  const runIds = res.locals.runIds;
+  console.log('  - Run Ids pulled from res.locals: ', runIds);
 
-    // Extract existing run IDs from the query result
-    const existingRunIds = existingRuns.flatMap(user => user.runs.map(run => run.run_id));
+  // Grab Access Token from cookies
+  const accessToken = req.cookies.access_token;
+  console.log('  - Access Token read from cookies: ', accessToken); // CL*
 
-    // Filter out unique run IDs
-    const uniqueRunIds = allRunIds.filter(runId => !existingRunIds.includes(runId));
-    console.log('uniqueRunIds: ', uniqueRunIds);
-
-    // Update res.locals.runIds with unique run IDs
-    res.locals.runIds = uniqueRunIds;
-
-    console.log('  - Adding unique run ids to runs array');
-    return next();
-  } catch (error) {
-    console.error('Error checking run ids:', error);
-  }
-};
-
-////////////////////////////////////////////////////////
-
-githubController.getRuns = async (req, res, next) => {
-  console.log('* Getting all runs data...'); // CL*
-
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
-  const { runIds } = res.locals;
-
-  // Store response from GET request to Github API for runs
-  const runs = [];
-  for (const runId of runIds) {
-    const runData = await axios({
+  // Store response from GET request to Github API for jobs data for each run
+  const jobsData = [];
+  const promises = runIds.map(runId =>
+    axios({
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
       headers: {
-        Authorization: `Bearer ${req.cookies.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
       withCredentials: true,
-    });
+    }),
+  );
 
-    runs.push(runData.data.jobs);
+  // console.log('promises : ', promises);
 
-    res.locals.runs = runs;
-  }
-  // console.log('  - runs: ', runs); // CL*
-  return next();
-};
+  const responses = await Promise.all(promises);
+  // console.log('responses: ', responses);
 
-////////////////////////////////////////////////////////
+  jobsData.push(responses.map(response => response.data.jobs));
 
-githubController.saveRuns = async (req, res, next) => {
-  console.log('* Saving runs data to database...'); // CL*
+  // console.log('  - User jobs data for each workflow run: ', jobsData); // CL*
 
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
-  // const { owner, repo } = req.body;
-
-  const { runs } = res.locals;
-  console.log('  - runs passed via res.locals: ', runs);
-
-  // Store response from GET request to Github API for jobs
-  for (const run of runs) {
-    for (const jobObj of run) {
-      const {
-        run_id,
-        workflow_name,
-        head_branch,
-        run_attempt,
-        status,
-        conclusion,
-        created_at,
-        started_at,
-        completed_at,
-        name,
-        steps,
-        run_url,
-        node_id,
-        head_sha,
-        url,
-        html_url,
-        check_run_url,
-        labels,
-        runner_id,
-        runner_name,
-        runner_group_id,
-        runner_group_name,
-      } = jobObj;
-
-      const runData = {
-        repo_owner: owner,
-        repo: repo,
-        run_id: run_id,
-        workflow_name: workflow_name,
-        head_branch: head_branch,
-        run_attempt: run_attempt,
-        status: status,
-        conclusion: conclusion,
-        created_at: created_at,
-        started_at: started_at,
-        completed_at: completed_at,
-        name: name,
-        steps: steps,
-        run_url: run_url,
-        node_id: node_id,
-        head_sha: head_sha,
-        url: url,
-        html_url: html_url,
-        check_run_url: check_run_url,
-        labels: labels,
-        runner_id: runner_id,
-        runner_name: runner_name,
-        runner_group_id: runner_group_id,
-        runner_group_name: runner_group_name,
-      };
-    }
-  }
-
+  // Pass on jobs data array
+  res.locals.jobsData = jobsData;
   return next();
 };
 
