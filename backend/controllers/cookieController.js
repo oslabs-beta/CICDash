@@ -10,10 +10,11 @@ cookieController.setCookie = async (req, res, next) => {
 
   const username = res.locals.apiResponse_data.login;
   const access_token = res.locals.authResponse_data.access_token;
+  const expires_in = new Date().getTime() + res.locals.authResponse_data.expires_in * 1000;
   const refresh_token = res.locals.authResponse_data.refresh_token;
   console.log('  - Access token pulled from res.locals: ', access_token);
 
-  res.cookie('access_token', access_token);
+  res.cookie('access_token', access_token, { expires: expires_in });
   res.cookie('username', username);
 
   console.log('  - Access token cookie set!');

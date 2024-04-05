@@ -4,6 +4,7 @@ const githubController = require('../controllers/githubController.js');
 
 const router = express.Router();
 
+
 // Handle GET requests to '/api/github/getRunIds' endpoint
 router.get('/getRunIds', githubController.getRunIds, (req, res) => {
   return res.status(200).json(res.locals.runs);
@@ -17,6 +18,7 @@ router.get('/getRuns', githubController.getRunIds, githubController.getRuns, (re
 // Handle GET requests to '/api/github/saveRuns' endpoint
 router.get(
   '/saveRuns',
+  githubController.refreshToken,
   githubController.getRunIds,
   githubController.getRuns,
   githubController.saveRuns,

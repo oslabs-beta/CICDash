@@ -7,6 +7,10 @@ const userController = require('../controllers/userController.js');
 
 const router = express();
 
+router.use('/', githubController.refreshToken, (req, res, next) => {
+  return res.status(200);
+});
+
 router.use(
   '/github/callback',
   githubController.auth,
