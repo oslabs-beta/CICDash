@@ -1,5 +1,6 @@
 const express = require('express');
 const githubController = require('../controllers/githubController.js');
+const databaseController = require('../controllers/databaseController.js');
 
 const router = express.Router();
 
@@ -7,8 +8,8 @@ const router = express.Router();
 router.get(
   '/saveRuns',
   githubController.getRunIds,
-  // githubController.getRuns,
-  // githubController.saveRuns,
+  githubController.getJobs,
+  databaseController.saveJobs,
   (req, res) => {
     return res.status(200).json(res.locals.jobs);
   },

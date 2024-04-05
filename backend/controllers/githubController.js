@@ -1,7 +1,5 @@
 require('dotenv').config();
 const axios = require('axios');
-const { Octokit } = require('@octokit/rest');
-const { User } = require('../models/userModel');
 
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -52,9 +50,9 @@ githubController.auth = async (req, res, next) => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-// Get the Run Ids
+// Get all of the user's workflow run ids for specified repo
 githubController.getRunIds = async (req, res, next) => {
-  console.log(`* Getting all run id's...`); // CL*
+  console.log(`* Getting all user's workflow runs id's...`); // CL*
 
   // Grab owner and repo from the request
   // const { owner, repo } = req.body;
@@ -76,146 +74,60 @@ githubController.getRunIds = async (req, res, next) => {
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
+  // console.log('  - apiResponse.data.workflow_runs: ', apiResponse.data.workflow_runs); // CL*
 
   // Iterate through each run and add it's id to 'runs' array
-  const runs = [];
-  apiResponse.data.workflow_runs.forEach(run => {
-    runs.push(run.id);
+  const runIds = [];
+  apiResponse.data.workflow_runs.forEach(runObj => {
+    runIds.push(runObj.id);
   });
-  console.log(`  - User workflow run ids: `, runs); // CL*
+  console.log(`  - User workflow run ids: `, runIds); // CL*
 
   // Pass on run ids array
-  res.locals.runIds = runs;
+  res.locals.runIds = runIds;
   return next();
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-githubController.getRuns = async (req, res, next) => {
-  console.log('* Getting all runs data...'); // CL*
+// Get all the jobs data associated w/ each workflow run
+githubController.getJobs = async (req, res, next) => {
+  console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
 
+  // Grab owner and repo from the request
   // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
-  const { runIds } = res.locals;
+  const owner = 'ptri-13-cat-snake'; // HARDCODE
+  const repo = 'unit-12-testing-gha'; // HARDCODE
+  console.log('  - Owner pulled from request object: ', owner);
+  console.log('  - Repo pulled from request object: ', repo);
 
-  // Store response from GET request to Github API for runs
-  const runs = [];
+  // Grab run ids array passed from prior middleware
+  const runIds = res.locals.runIds;
+  console.log('  - Run Ids pulled from res.locals: ', runIds);
+
+  // Grab Access Token from cookies
+  const accessToken = req.cookies.access_token;
+  console.log('  - Access Token read from cookies: ', accessToken); // CL*
+
+  // Store response from GET request to Github API for jobs data for each run
+  const jobsData = [];
   for (const runId of runIds) {
-    const runData = await axios({
+    // GET request to Github api for jobs data associated w/ each workflow run
+    const apiResponse = await axios({
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
       headers: {
-        Authorization: `Bearer ${req.cookies.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
       withCredentials: true,
     });
-
-    runs.push(runData.data.jobs);
-
-    res.locals.runs = runs;
+    jobsData.push(apiResponse.data.jobs);
   }
-  // console.log('  - runs: ', runs); // CL*
-  return next();
-};
+  // console.log('  - User jobs data for each workflow run: ', jobsData); // CL*
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-githubController.saveRuns = async (req, res, next) => {
-  console.log('* Saving runs data to database...'); // CL*
-
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
-  // const { owner, repo } = req.body;
-
-  const { runs } = res.locals;
-  console.log('  - runs passed via res.locals: ', runs);
-
-  // Store response from GET request to Github API for jobs
-  for (const run of runs) {
-    for (const jobObj of run) {
-      const {
-        run_id,
-        workflow_name,
-        head_branch,
-        run_attempt,
-        status,
-        conclusion,
-        created_at,
-        started_at,
-        completed_at,
-        name,
-        steps,
-        run_url,
-        node_id,
-        head_sha,
-        url,
-        html_url,
-        check_run_url,
-        labels,
-        runner_id,
-        runner_name,
-        runner_group_id,
-        runner_group_name,
-      } = jobObj;
-
-      const runData = {
-        repo_owner: owner,
-        repo: repo,
-        run_id: run_id,
-        workflow_name: workflow_name,
-        head_branch: head_branch,
-        run_attempt: run_attempt,
-        status: status,
-        conclusion: conclusion,
-        created_at: created_at,
-        started_at: started_at,
-        completed_at: completed_at,
-        name: name,
-        steps: steps,
-        run_url: run_url,
-        node_id: node_id,
-        head_sha: head_sha,
-        url: url,
-        html_url: html_url,
-        check_run_url: check_run_url,
-        labels: labels,
-        runner_id: runner_id,
-        runner_name: runner_name,
-        runner_group_id: runner_group_id,
-        runner_group_name: runner_group_name,
-      };
-
-      const existingUser = await User.findOne({
-        username: req.cookies.username,
-      });
-
-      // Check if user exists in database
-      if (existingUser) {
-        console.log('  - User exists in database!');
-
-        let runExists = false;
-
-        // for (const run of existingUser.runs) {
-        //   // If the run.run_id = passed in run.run_id
-        //   if (run.run_id === run_id) {
-        //     runExists = true;
-        //     console.log('  - Run exists in User runs array');
-        //   }
-        // }
-
-        if (!runExists) {
-          await User.findOneAndUpdate(
-            { username: req.cookies.username },
-            { $addToSet: { runs: runData } },
-          );
-          console.log('  - User runs array updated!');
-        }
-      }
-    }
-  }
-
+  // Pass on jobs data array
+  res.locals.jobsData = jobsData;
   return next();
 };
 
