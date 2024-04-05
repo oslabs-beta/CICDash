@@ -11,7 +11,7 @@ router.use(
   '/github/callback',
   githubController.auth,
   cookieController.setCookie,
-  userController.registerUser,
+  // userController.registerUser,
   (req, res, next) => {
     res.redirect('http://localhost:8080/results');
     return next();

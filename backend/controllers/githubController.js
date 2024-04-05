@@ -9,90 +9,87 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const githubController = {};
 
-////////////////////////////////////////////////////////
-
-// /auth/github/callback
+// Authorize user via Github to log in
 githubController.auth = async (req, res, next) => {
-  console.log('* Authorizing login and granting access token...');
+  console.log('* Authorizing login and pulling user data from GitHub...');
 
-  // Grab request token generated at 'login with Github'
-  const requestToken = req.query.code;
-  // POST request to Github api for access token
+  // Grab Authorization Code provided by GitHub after the user logs in w/ GitHub
+  const authCode = req.query.code;
+
+  // POST request to Github api using Client ID, Client Credentials, and Authorization Code
   const authResponse = await axios({
     method: 'post',
-    url: `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${requestToken}`,
+    url: `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${authCode}`,
     // Set the content type header, so that we get the response in JSON
     headers: {
       accept: 'application/json',
     },
   });
-  // console.log('  - authResponse.data:', authResponse.data); // CL*
 
-  const access_token = authResponse.data.access_token;
-  console.log('  - Access token:', access_token);
-  res.locals.authResponse_data = authResponse.data;
+  // Pass on the authentication data sent back by Github (ie Access Token, Refresh Token)
+  res.locals.authResponseData = authResponse.data;
+  console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
 
-  // GET request to Github api for user data
+  // Grab Access Token from authentication data sent back by Github
+  const accessToken = authResponse.data.access_token;
+  // console.log('  - Access token:', accessToken); // CL*
+
+  // GET request to Github api for user data using Access Token
   const apiResponse = await axios({
     method: 'get',
     url: `https://api.github.com/user`,
     headers: {
-      Authorization: 'token ' + access_token,
+      Authorization: 'token ' + accessToken,
     },
   });
-  // console.log('  - apiResponse.data:', apiResponse.data); // CL*
-  console.log('  - Access granted!');
 
-  res.locals.apiResponse_data = apiResponse.data;
+  // Pass on the user data sent back by Github (ie Username)
+  res.locals.apiResponseData = apiResponse.data;
+  console.log('  - User data sent back by Github:', apiResponse.data); // CL*
+
   return next();
 };
 
-////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------------------------------------------
 
+// Get the Run Ids
 githubController.getRunIds = async (req, res, next) => {
   console.log(`* Getting all run id's...`); // CL*
 
+  // Grab owner and repo from the request
   // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const owner = 'ptri-13-cat-snake'; // HARDCODE
+  const repo = 'unit-12-testing-gha'; // HARDCODE
+  console.log('  - Owner pulled from request object: ', owner);
+  console.log('  - Repo pulled from request object: ', repo);
 
-  console.log(`  - Data sent from frontend: owner: ${owner}, repo: ${repo}`); // CL*
-  console.log('  - Access Token from Cookies: ', req.cookies.access_token); // CL*
+  // Grab Access Token from cookies
+  const accessToken = req.cookies.access_token;
+  console.log('  - Access Token read from cookies: ', accessToken); // CL*
 
-  console.log('  - req.cookies: ', req.cookies.access_token);
+  // GET request to Github api for user runs data using Access Token
+  const apiResponse = await axios({
+    method: 'get',
+    url: `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
+    headers: {
+      Authorization: 'token ' + accessToken,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
 
-  try {
-    const octokit = new Octokit({
-      auth: req.cookies.access_token,
-      baseUrl: 'https://api.github.com',
-    });
+  // Iterate through each run and add it's id to 'runs' array
+  const runs = [];
+  apiResponse.data.workflow_runs.forEach(run => {
+    runs.push(run.id);
+  });
+  console.log(`  - User workflow run ids: `, runs); // CL*
 
-    const runsData = await octokit.request('GET /repos/{owner}/{repo}/actions/runs', {
-      owner: owner,
-      repo: repo,
-      // job_id: 'JOB_ID',
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    });
-
-    const runs = [];
-    // Iterate through each run  and add it's id to 'runs' array
-    runsData.data.workflow_runs.forEach(run => {
-      runs.push(run.id);
-    });
-    console.log(`  - 'runs' array: `, runs); // CL*
-
-    // Pass run id's array on in middelware chain
-    res.locals.runIds = runs;
-    return next();
-  } catch (err) {
-    console.log('error: ' + err.message);
-    return next(err);
-  }
+  // Pass on run ids array
+  res.locals.runIds = runs;
+  return next();
 };
 
-////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------------------------------------------
 
 githubController.getRuns = async (req, res, next) => {
   console.log('* Getting all runs data...'); // CL*
@@ -123,7 +120,7 @@ githubController.getRuns = async (req, res, next) => {
   return next();
 };
 
-////////////////////////////////////////////////////////
+// ---------------------------------------------------------------------------------------------------------------------
 
 githubController.saveRuns = async (req, res, next) => {
   console.log('* Saving runs data to database...'); // CL*
@@ -200,13 +197,13 @@ githubController.saveRuns = async (req, res, next) => {
 
         let runExists = false;
 
-        for (const run of existingUser.runs) {
-          // If the run.run_id = passed in run.run_id
-          if (run.run_id === run_id) {
-            runExists = true;
-            console.log('  - Run exists in User runs array');
-          }
-        }
+        // for (const run of existingUser.runs) {
+        //   // If the run.run_id = passed in run.run_id
+        //   if (run.run_id === run_id) {
+        //     runExists = true;
+        //     console.log('  - Run exists in User runs array');
+        //   }
+        // }
 
         if (!runExists) {
           await User.findOneAndUpdate(
