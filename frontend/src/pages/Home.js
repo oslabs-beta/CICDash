@@ -1,16 +1,16 @@
 import React from 'react';
 import background from '/frontend/assets/5156046.jpg';
 import '/frontend/src/stylesheet.css'; 
-import { useHistory } from 'react-router-dom'; // Import useHistory hook
-
+// import { useHistory } from 'react-router-dom'; // Import useHistory hook
+import { useNavigate } from 'react-router-dom';
 
 
 const Home = () => {
-    // const history = useHistory();
+    const navigate = useNavigate();
 
-    // const redirectToEnterInfo = () => {
-    //   history.push('/Enterinfo.js');
-    // };
+    const redirectToEnterInfo = () => {
+    navigate('/enterInfo');
+    };
   return (
     <div className='flex-container' style={{ backgroundImage: `url(${background})` }}>
       <h1 className='logo'>CICDEEZ</h1>
@@ -33,7 +33,7 @@ const Home = () => {
         </button>
       </a>
       <button
-        // onClick={redirectToEnterInfo} // Handle click event
+        onClick={redirectToEnterInfo} // Handle click event
         type='button'
         class='py-2 px-4 max-w-md flex justify-center items-center bg-gray-600 hover:bg-gray-700 focus:ring-gray-500 focus:ring-offset-gray-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg'
       >
