@@ -7,6 +7,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const githubController = {};
 
+
 // Authorize user via Github to log in
 githubController.auth = async (req, res, next) => {
   console.log('* Authorizing login and pulling user data from GitHub...');
@@ -93,6 +94,7 @@ githubController.getRunIds = async (req, res, next) => {
   }
 };
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Get all the jobs data associated w/ each workflow run
@@ -116,8 +118,9 @@ githubController.getJobs = async (req, res, next) => {
 
   // Store response from GET request to Github API for jobs data for each run
   const jobsData = [];
-  const promises = runIds.map(runId =>
-    axios({
+  for (const runId of runIds) {
+    // GET request to Github api for jobs data associated w/ each workflow run
+    const apiResponse = await axios({
       method: 'get',
       url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
       headers: {
@@ -125,16 +128,9 @@ githubController.getJobs = async (req, res, next) => {
         'X-GitHub-Api-Version': '2022-11-28',
       },
       withCredentials: true,
-    }),
-  );
-
-  // console.log('promises : ', promises);
-
-  const responses = await Promise.all(promises);
-  // console.log('responses: ', responses);
-
-  jobsData.push(responses.map(response => response.data.jobs));
-
+    });
+    jobsData.push(apiResponse.data.jobs);
+  }
   // console.log('  - User jobs data for each workflow run: ', jobsData); // CL*
 
   // Pass on jobs data array
