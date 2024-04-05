@@ -42,7 +42,6 @@ mongoose
   .catch(err => console.log(err));
 
 // Route handlers
-app.use('/', authRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
 
