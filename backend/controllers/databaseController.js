@@ -87,89 +87,109 @@ databaseController.getUniqueRunIds = async (req, res, next) => {
 
 // Save all the jobs data associated w/ each workflow run in mongodb
 databaseController.saveJobs = async (req, res, next) => {
-  console.log('* Saving all the jobs data associated w/ each workflow run to mongodb...'); // CL*
-
-  // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake'; // HARDCODE
-  const repo = 'unit-12-testing-gha'; // HARDCODE
-  console.log('  - Owner pulled from request object: ', owner);
-  console.log('  - Repo pulled from request object: ', repo);
-
   // Grab jobs data array passed from prior middleware
   const jobsData = res.locals.jobsData;
-  // console.log('  - Jobs data pulled from res.locals: ', jobsData); // CL*
+  if (!jobsData) {
+    console.log(`* No new jobs to save...`); // CL*
+    return next();
+  } else {
+    console.log('* Saving all the jobs data associated w/ each workflow run to mongodb...'); // CL*
 
-  // Grab Username from cookies
-  const username = req.cookies.username;
-  console.log('  - Username read from cookies: ', username); // CL*
+    // Grab owner and repo from the request
+    // const { owner, repo } = req.body;
+    const owner = 'ptri-13-cat-snake'; // HARDCODE
+    const repo = 'unit-12-testing-gha'; // HARDCODE
+    console.log('  - Owner pulled from request object: ', owner);
+    console.log('  - Repo pulled from request object: ', repo);
 
-  // Iterate through jobsData and save each job obj to mongodb
-  // NOTE: jobsData is an array of subarrays, where each subarray represents one workflow run.  Each workflow run subarray contains 1+ job objs (depending on how many jobs you have defined for the workflow)
-  for (const runArr of jobsData) {
-    for (const jobObj of runArr) {
-      const {
-        run_id,
-        workflow_name,
-        head_branch,
-        run_attempt,
-        status,
-        conclusion,
-        created_at,
-        started_at,
-        completed_at,
-        name,
-        steps,
-        run_url,
-        node_id,
-        head_sha,
-        url,
-        html_url,
-        check_run_url,
-        labels,
-        runner_id,
-        runner_name,
-        runner_group_id,
-        runner_group_name,
-      } = jobObj;
+    // console.log('  - Jobs data pulled from res.locals: ', jobsData); // CL*
 
-      const runData = {
-        repo_owner: owner,
-        repo: repo,
-        run_id: run_id,
-        workflow_name: workflow_name,
-        head_branch: head_branch,
-        run_attempt: run_attempt,
-        status: status,
-        conclusion: conclusion,
-        created_at: created_at,
-        started_at: started_at,
-        completed_at: completed_at,
-        name: name,
-        steps: steps,
-        run_url: run_url,
-        node_id: node_id,
-        head_sha: head_sha,
-        url: url,
-        html_url: html_url,
-        check_run_url: check_run_url,
-        labels: labels,
-        runner_id: runner_id,
-        runner_name: runner_name,
-        runner_group_id: runner_group_id,
-        runner_group_name: runner_group_name,
-      };
+    // Grab Username from cookies
+    const username = req.cookies.username;
+    console.log('  - Username read from cookies: ', username); // CL*
 
-      await User.findOneAndUpdate(
-        { username: req.cookies.username },
-        { $addToSet: { runs: runData } },
-      );
-      
+    // Iterate through jobsData and save each job obj to mongodb
+    // NOTE: jobsData is an array of subarrays, where each subarray represents one workflow run.  Each workflow run subarray contains 1+ job objs (depending on how many jobs you have defined for the workflow)
+    try {
+      // create a bulkOperations array that will store all of the new jobs
+      const bulkOperations = [];
+      //iterare through the runs
+      for (const runArr of jobsData) {
+        //iterare through the jobs for each run
+        for (const jobObj of runArr) {
+          const {
+            run_id,
+            workflow_name,
+            head_branch,
+            run_attempt,
+            status,
+            conclusion,
+            created_at,
+            started_at,
+            completed_at,
+            name,
+            steps,
+            run_url,
+            node_id,
+            head_sha,
+            url,
+            html_url,
+            check_run_url,
+            labels,
+            runner_id,
+            runner_name,
+            runner_group_id,
+            runner_group_name,
+          } = jobObj;
+
+          const runData = {
+            repo_owner: owner,
+            repo: repo,
+            run_id: run_id,
+            workflow_name: workflow_name,
+            head_branch: head_branch,
+            run_attempt: run_attempt,
+            status: status,
+            conclusion: conclusion,
+            created_at: created_at,
+            started_at: started_at,
+            completed_at: completed_at,
+            name: name,
+            steps: steps,
+            run_url: run_url,
+            node_id: node_id,
+            head_sha: head_sha,
+            url: url,
+            html_url: html_url,
+            check_run_url: check_run_url,
+            labels: labels,
+            runner_id: runner_id,
+            runner_name: runner_name,
+            runner_group_id: runner_group_id,
+            runner_group_name: runner_group_name,
+          };
+
+          // Add update operation to bulk operations array
+          bulkOperations.push({
+            updateOne: {
+              filter: { username: username },
+              update: { $addToSet: { runs: runData } },
+            },
+          });
+        }
+      }
+
+      // Execute bulk write operations
+      await User.bulkWrite(bulkOperations);
+
       console.log('  - User runs array updated!');
+      return next();
+    } catch (error) {
+      console.error('Error saving jobs data:', error);
+      // Handle error appropriately
+      next(error);
     }
   }
-
-  return next();
 };
 
 module.exports = databaseController;

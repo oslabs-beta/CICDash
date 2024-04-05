@@ -7,7 +7,6 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const githubController = {};
 
-
 // Authorize user via Github to log in
 githubController.auth = async (req, res, next) => {
   console.log('* Authorizing login and pulling user data from GitHub...');
@@ -94,48 +93,59 @@ githubController.getRunIds = async (req, res, next) => {
   }
 };
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Get all the jobs data associated w/ each workflow run
 githubController.getJobs = async (req, res, next) => {
-  console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
-
-  // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake'; // HARDCODE
-  const repo = 'unit-12-testing-gha'; // HARDCODE
-  console.log('  - Owner pulled from request object: ', owner);
-  console.log('  - Repo pulled from request object: ', repo);
-
   // Grab run ids array passed from prior middleware
   const runIds = res.locals.runIds;
   console.log('  - Run Ids pulled from res.locals: ', runIds);
+  if (!runIds.length) {
+    console.log(`* No new jobs to retrieve...`); // CL*
+    return next();
+  } else {
+    console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
 
-  // Grab Access Token from cookies
-  const accessToken = req.cookies.access_token;
-  console.log('  - Access Token read from cookies: ', accessToken); // CL*
+    // Grab owner and repo from the request
+    // const { owner, repo } = req.body;
+    const owner = 'ptri-13-cat-snake'; // HARDCODE
+    const repo = 'unit-12-testing-gha'; // HARDCODE
+    console.log('  - Owner pulled from request object: ', owner);
+    console.log('  - Repo pulled from request object: ', repo);
 
-  // Store response from GET request to Github API for jobs data for each run
-  const jobsData = [];
-  for (const runId of runIds) {
-    // GET request to Github api for jobs data associated w/ each workflow run
-    const apiResponse = await axios({
-      method: 'get',
-      url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      withCredentials: true,
-    });
-    jobsData.push(apiResponse.data.jobs);
+    // Grab Access Token from cookies
+    const accessToken = req.cookies.access_token;
+    console.log('  - Access Token read from cookies: ', accessToken); // CL*
+
+    try {
+      // create a promise constant that maps through runIds and stores all of the get requests for each run id
+      // this submits the requests all at once. if we use await, it will be synchronous
+      const promises = runIds.map(runId =>
+        axios({
+          method: 'get',
+          url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+          withCredentials: true,
+        }),
+      );
+
+      // create a responses constant that waits until all get requests are complete
+      const responses = await Promise.all(promises);
+
+      // create jobsData constant that maps over the response and only stores the jobs property
+      const jobsData = responses.map(response => response.data.jobs);
+      // console.log('jobsData: ', jobsData);
+      res.locals.jobsData = jobsData;
+      return next();
+    } catch (error) {
+      console.error('Error fetching job data:', error);
+      // Handle error appropriately
+      next(error);
+    }
   }
-  // console.log('  - User jobs data for each workflow run: ', jobsData); // CL*
-
-  // Pass on jobs data array
-  res.locals.jobsData = jobsData;
-  return next();
 };
 
 module.exports = githubController;
