@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 
@@ -17,10 +19,21 @@ console.log(
 ); // CL*
 
 // Route files
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes.js');
+const githubRoutes = require('./routes/githubRoutes.js');
 
-// Handle parsing the JSON body of every req
+// Handle parsing the JSON body of every req and parsing the cookies of every req
+app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
+// Configure CORS to allow requests specifically from 'http://localhost:8080' and allow credentials
+app.use(cors({
+  origin: 'http://localhost:8080',
+  credentials: true // Enable credentials (cookies, authorization headers) to be sent cross-domain
+}));
+
+
 
 // Connect to Mongo DB
 mongoose
@@ -30,10 +43,7 @@ mongoose
 
 // Route handlers
 app.use('/auth', authRoutes);
-// app.use('/callback', (req, res) => {
-//   console.log('callback activated');
-//   console.log('code:', req.query.code);
-// })
+app.use('/api/github', githubRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
