@@ -9,6 +9,7 @@ router.get(
   '/saveRuns',
   githubController.refreshToken,
   githubController.getRunIds,
+  databaseController.getUniqueRunIds,
   githubController.getJobs,
   databaseController.saveJobs,
   (req, res) => {
