@@ -31,6 +31,16 @@ module.exports = {
         test: /\.(png|jpe?g|JPG)$/,
         type: 'asset/resource',
       },
+      {
+        test: /\.gif$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'assets/', // specify the output path for the assets
+          },
+        },
+      },
     ],
   },
   plugins: [
