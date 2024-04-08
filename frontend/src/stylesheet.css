@@ -1,56 +1,104 @@
-.flex-container {
-  display: flex; /* or inline-flex */
+.Home {
+  /* Size */
+  min-height: 100vh;
+  /* Content Position */
+  display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+
+/* -------------------------------------------------- */
+/* HOME HEADER */
+.Home-header {
+  /* Content Position */
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  /* ensure gif background is stretched to window size */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  padding: 15px;
+  /* Style */
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.logo-text {
-  color: white;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 75pt;
-  margin-bottom: -5pt;
+.logo {
+  /* Size */
+  width: 150px;
+  /* Position */
+  margin-left: 150px;
 }
 
-p {
-  color: white;
-  font-size: 20pt;
-  margin-bottom: 40pt;
+.Home-header nav ul {
+  /* Position */
+  margin-right: 150px;
 }
 
-/* Blinking cursor animation */
-@keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.Home-header nav ul li {
+  /* Content Position */
+  display: inline;
+  margin-right: 20px;
 }
 
-/* Apply the animation to the underscore */
-.blink {
-  animation: blink 1s infinite; /* Adjust the duration as needed */
+/* -------------------------------------------------- */
+/* HOME CONTENT */
+.Home-content {
+  /* Content Position */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 100px); /* Adjust for scrolling on page */
 }
 
-/* Button styles */
+/* TEXT */
+.Home-content h2 {
+  /* Size */
+  font-size: 54px;
+  /* Position */
+  margin-top: 120px;
+  /* Style */
+  font-weight: 100;
+}
+
+.Home-content h3 {
+  /* Size */
+  font-size: 26px;
+  /* Positon */
+  margin-top: 20px;
+  /* Style */
+  font-weight: 100;
+  color: gray;
+}
+
+/* GH LOGIN BUTTON */
 .gh-login-button {
-  background-color: rgb(0, 177, 127) !important;
-  border-radius: 20px !important;
-  width: 150px; /* button width */
-  height: 50px; /* button height */
-  font-size: 12pt;
+  /* Position */
+  margin-top: 30px;
+  /* Content Position */
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  /* Style */
+  background-image: linear-gradient(to right, #00bf63, #05a78b);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  font-size: 14pt;
+  color: white;
+  border: none;
+  border-radius: 5px !important;
+}
+
+.gh-login-button svg {
+  /* Position */
+  margin-right: 5px;
 }
 
 .gh-login-button:hover {
-  background-color: rgb(0, 91, 78) !important;
+  background-image: linear-gradient(to right, #05a78b, #00bf63); /* Gradient colors */
+}
+
+/* METRICS GIF */
+.metrics-gif {
+  /* Size */
+  width: 1000px;
+  /* Position */
+  position: absolute;
+  z-index: -1;
+  margin-top: 30px;
 }
