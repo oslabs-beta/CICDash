@@ -118,7 +118,7 @@ const Mvpmetrics = () => {
     const fetchData = async () => {
       console.log('Fetching runs from db ...');
       try {
-        const findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+        const findJobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
           //'http://localhost:3000/api/github/getjobs'
           withCredentials: true,
         });
