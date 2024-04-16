@@ -16,4 +16,8 @@ router.get(
   },
 );
 
+router.get('/findRuns', databaseController.findRuns, (req, res) => {
+  return res.status(200).json(res.locals.existingRuns);
+});
+
 module.exports = router;

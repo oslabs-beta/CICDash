@@ -192,4 +192,21 @@ databaseController.saveJobs = async (req, res, next) => {
   }
 };
 
+databaseController.findRuns = async (req, res, next) => {
+  console.log(`* Checking existing runs in database...`); // CL*
+  try {
+    // Query the database to check if the username has a runs entry with any of the run IDs
+    const existingRuns = await User.find({ username: req.cookies.username });
+    console.log('existingRuns: ', existingRuns)
+    // Update res.locals.runIds with unique run IDs
+    res.locals.existingRuns = existingRuns;
+
+    return next();
+  } catch (error) {
+    console.error('Error finding runs:', error);
+  }
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 module.exports = databaseController;
