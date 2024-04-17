@@ -28,12 +28,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Configure CORS to allow requests specifically from 'http://localhost:8080' and allow credentials
-app.use(cors({
-  origin: 'http://localhost:8080',
-  credentials: true // Enable credentials (cookies, authorization headers) to be sent cross-domain
-}));
-
-
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    credentials: true, // Enable credentials (cookies, authorization headers) to be sent cross-domain
+  }),
+);
 
 // Connect to Mongo DB
 mongoose
