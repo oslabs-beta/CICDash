@@ -934,7 +934,6 @@ const tempData = [
   },
 ];
 
-
 const labels = [
   "January '23",
   "February '23",
@@ -945,19 +944,23 @@ const labels = [
   "July '23",
 ]; //months
 
+const timeDifSeconds = (start, end) => {
+  const time1 = new Date(start);
+  const time2 = new Date(end);
+  return (time2.getTime() - time1.getTime()) / 1000;
+};
+const start1 = tempData[0].runs[0].steps[0].started_at; //start
+const end1 = tempData[0].runs[0].steps[tempData[0].runs[0].steps.length - 1].completed_at; //end
+// console.log('Time diff in seconds: ', timeDifSeconds(start1, end1));
 
-// Example ISO 8601 date string
-const isoDateString = "2024-03-16T17:07:01.000+00:00";
-
-// Parse the ISO 8601 date string
-// const date = new Date(isoDateString);
-
-// Get the month and year components
-// const month = date.toLocaleString('default', { month: 'long' }); // Get month name
-// const year = date.getFullYear(); // Get the full year
-
-// Format the result
-// const monthYearFormat = `${month} ${year}`;
+const getMonthYear = isoDate => {
+  const date = new Date(isoDateString);
+  const month = date.toLocaleString('default', { month: 'long' }); // Get month name
+  const year = date.getFullYear().toString().substr(-2); // Get the last two digits of year
+  return `${month} '${year}`;
+};
+const isoDateString = '2024-03-16T17:07:01.000+00:00';
+console.log('Month year:', getMonthYear(isoDateString));
 
 //Vertical Bar Chart
 export const data = {
@@ -1037,6 +1040,7 @@ const Mvpmetrics = () => {
           withCredentials: true,
         });
         console.log('findJobs:', findJobs.data[0].runs);
+
         setMetrics(findJobs.data[0].runs);
       } catch (error) {
         console.error('Error fetching data:', error);
