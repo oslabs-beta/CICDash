@@ -142,6 +142,17 @@ databaseController.saveJobs = async (req, res, next) => {
             runner_group_name,
           } = jobObj;
 
+          const started_at_ms = new Date(started_at);
+          const completed_at_ms = new Date(completed_at);
+
+          stepsWithCalc = steps.map(step => {
+            const stepWithCalc = { ...step };
+            const step_started_at_ms = new Date(step.started_at);
+            const step_completed_at_ms = new Date(step.completed_at);
+            stepWithCalc.step_completion_time = step_completed_at_ms - stepstarted_at_ms;
+            return stepWithCalc;
+          });
+
           const runData = {
             repo_owner: owner,
             repo: repo,
@@ -154,8 +165,9 @@ databaseController.saveJobs = async (req, res, next) => {
             created_at: created_at,
             started_at: started_at,
             completed_at: completed_at,
+            job_completion_time_ms: completed_at_ms - started_at_ms,
             name: name,
-            steps: steps,
+            steps: stepsWithCalc,
             run_url: run_url,
             node_id: node_id,
             head_sha: head_sha,
@@ -191,5 +203,22 @@ databaseController.saveJobs = async (req, res, next) => {
     }
   }
 };
+
+databaseController.findRuns = async (req, res, next) => {
+  console.log(`* Checking existing runs in database...`); // CL*
+  try {
+    // Query the database to check if the username has a runs entry with any of the run IDs
+    const existingRuns = await User.find({ username: req.cookies.username });
+    console.log('existingRuns: ', existingRuns);
+    // Update res.locals.runIds with unique run IDs
+    res.locals.existingRuns = existingRuns;
+
+    return next();
+  } catch (error) {
+    console.error('Error finding runs:', error);
+  }
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = databaseController;
