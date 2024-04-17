@@ -62,6 +62,7 @@ const runSchema = new Schema({
   created_at: { type: Date, required: true }, // CHECK IF OKAY
   started_at: { type: Date, required: true },
   completed_at: { type: Date, required: true },
+  job_completion_time_ms: { type: Number, required: true },
   name: { type: String, required: true },
   steps: { type: Array, required: true },
   check_run_url: { type: String, required: true },

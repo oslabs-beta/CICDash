@@ -123,13 +123,14 @@ const Mvpmetrics = () => {
   const [metrics, setMetrics] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
+      console.log('Fetching runs from db ...');
       try {
-        const getjobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
+        const findJobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
           //'http://localhost:3000/api/github/getjobs'
           withCredentials: true,
         });
-        console.log('getjobs:', getjobs.data);
-        setMetrics(getjobs.data);
+        console.log('findJobs:', findJobs.data[0].runs);
+        setMetrics(findJobs.data[0].runs);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
