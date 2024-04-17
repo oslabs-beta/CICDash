@@ -1,3 +1,9 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
 .Home {
   /* Size */
   min-height: 100vh;
@@ -47,6 +53,7 @@
   min-height: calc(100vh - 100px); /* Adjust for scrolling on page */
 }
 
+/* -------------------------------------------------- */
 /* TEXT */
 .Home-content h2 {
   /* Size */
@@ -67,6 +74,7 @@
   color: gray;
 }
 
+/* -------------------------------------------------- */
 /* GH LOGIN BUTTON */
 .gh-login-button {
   /* Position */
@@ -93,6 +101,7 @@
   background-image: linear-gradient(to right, #05a78b, #00bf63); /* Gradient colors */
 }
 
+/* -------------------------------------------------- */
 /* METRICS GIF */
 .metrics-gif {
   /* Size */
@@ -101,4 +110,37 @@
   position: absolute;
   z-index: -1;
   margin-top: 30px;
+}
+
+/* -------------------------------------------------- */
+/* CHARTJS GRAPHS AND CHARTS */
+.grid-container {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* This will create two columns of equal width */
+  grid-template-rows: auto auto; /* Adjust row height based on content */
+}
+
+.viz-a,
+.viz-b {
+  grid-row: 1; /* Places both .viz-a and .viz-b in the first row */
+}
+
+.viz-a {
+  grid-column: 1 / span 1; /* Occupies the first part of the first row */
+}
+
+.viz-b {
+  display: grid;
+  grid-column: 2 / span 1; /* Occupies the second part of the first row */
+  max-height: 50vh;
+  place-items: center;
+}
+
+.viz-c {
+  display: grid;
+  grid-column: 1 / span 2; /* Spans across both columns in the second row */
+  grid-row: 2; /* Places .viz-c in the second row */
+  max-height: 50vh;
+  place-items: center;
 }

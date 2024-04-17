@@ -149,7 +149,7 @@ databaseController.saveJobs = async (req, res, next) => {
             const stepWithCalc = { ...step };
             const step_started_at_ms = new Date(step.started_at);
             const step_completed_at_ms = new Date(step.completed_at);
-            stepWithCalc.step_completion_time = step_completed_at_ms - stepstarted_at_ms;
+            stepWithCalc.step_completion_time = step_completed_at_ms - step_started_at_ms;
             return stepWithCalc;
           });
 
