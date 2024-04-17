@@ -51,6 +51,20 @@ const labels = [
   "July '23",
 ]; //months
 
+
+// Example ISO 8601 date string
+const isoDateString = "2024-03-16T17:07:01.000+00:00";
+
+// Parse the ISO 8601 date string
+// const date = new Date(isoDateString);
+
+// Get the month and year components
+// const month = date.toLocaleString('default', { month: 'long' }); // Get month name
+// const year = date.getFullYear(); // Get the full year
+
+// Format the result
+// const monthYearFormat = `${month} ${year}`;
+
 //Vertical Bar Chart
 export const data = {
   labels,
