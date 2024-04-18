@@ -207,8 +207,13 @@ databaseController.saveJobs = async (req, res, next) => {
 databaseController.findRuns = async (req, res, next) => {
   console.log(`* Fetching existing runs in database...`); // CL*
   try {
+    const { owner, repo } = req.query;
     // Query the database to check if the username has a runs entry with any of the run IDs
-    const existingRuns = await User.find({ username: req.cookies.username });
+    const existingRuns = await User.find({
+      username: req.cookies.username,
+      owner: owner,
+      repo: repo,
+    });
     console.log(` - Sent existing runs to frontend.`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
