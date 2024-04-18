@@ -138,27 +138,79 @@ const Mvpmetrics = () => {
     fetchData();
   }, []);
 
-  return (
-    <>
-    <div className='dataEntry'>
-      {/* <form> </form> */}
-    <label>Please enter</label>
-    <input type="text"/>
+  // ____username function below
+    const [username, setUsername] = useState('');
+    const [repo, setRepo] = useState('');
 
-    </div>
-      <div className={'grid-container'}>
-        <div className={'viz-a'}>
-          <Bar options={options} data={data} />
+    const handleSubmit = async e => {
+      e.preventDefault();
+
+      if (username.trim() === '' || repo.trim() === '') {
+        // If either field is empty, do not submit
+        alert('Please fill in both fields');
+        return;
+      }
+
+      try {
+        // Make a POST request to your backend server
+        const response = await axios.post('http://localhost:8080/results', {
+          username,
+          repo,
+        });
+
+        // Handle the response accordingly
+        console.log('Response console.log:', response.data);
+
+        // Clear input fields after successful submission
+        setUsername('');
+        setRepo('');
+      } catch (error) {
+        // Handle errors
+        console.error('Error in MVPmetrics username and repo:', error);
+      }
+    };
+
+    return (
+      <>
+        <div className='dataEntry'>
+          <label>Please enter your Username and Repository below</label>
+          <form>
+            {/* <label>Github Username</label> */}
+            <input
+              type='text'
+              placeholder='Enter your GitHub Username'
+              id='username'
+              value={username}
+              // on login, username is saved in cookies.
+              onChange={e => setUsername(e.target.value)}
+            />
+            {/* <label>Repository Name</label> */}
+
+            <input
+              type='text'
+              placeholder='Enter the Repository name'
+              id='repo'
+              value={repo}
+              onChange={e => setRepo(e.target.value)}
+            />
+            <button type='submit' onClick={handleSubmit}>
+              Submit
+            </button>
+          </form>
         </div>
-        <div className={'viz-b'}>
-          <Pie data={pieData} />
+        <div className={'grid-container'}>
+          <div className={'viz-a'}>
+            <Bar options={options} data={data} />
+          </div>
+          <div className={'viz-b'}>
+            <Pie data={pieData} />
+          </div>
+          <div className={'viz-c'}>
+            <Bar options={horizBarOptions} data={horizBarData} />
+          </div>
         </div>
-        <div className={'viz-c'}>
-          <Bar options={horizBarOptions} data={horizBarData} />
-        </div>
-      </div>
-    </>
-  );
+      </>
+    );
 };
 
 export default Mvpmetrics;
