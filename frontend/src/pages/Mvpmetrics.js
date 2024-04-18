@@ -140,6 +140,12 @@ const Mvpmetrics = () => {
 
   return (
     <>
+    <div className='dataEntry'>
+      {/* <form> </form> */}
+    <label>Please enter</label>
+    <input type="text"/>
+
+    </div>
       <div className={'grid-container'}>
         <div className={'viz-a'}>
           <Bar options={options} data={data} />
