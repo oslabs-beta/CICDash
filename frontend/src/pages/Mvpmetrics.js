@@ -119,22 +119,34 @@ export const horizBarData = {
   ],
 };
 
+const owner = 'ptri-13-cat-snake'; // HARDCODE
+const repo = 'unit-12-testing-gha'; // HARDCODE
+
 const Mvpmetrics = () => {
+  //create metric state
   const [metrics, setMetrics] = useState([]);
+
+  //declare fetchData helper function to get most updated metrics and save to state
+  const fetchData = async () => {
+    console.log('* Fetching runs from db ...');
+    try {
+      const findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+        //'http://localhost:3000/api/github/getjobs'
+        withCredentials: true,
+        params: {
+          owner: owner,
+          repo: repo,
+        },
+      });
+      console.log(' - Saving runs from database to state');
+      setMetrics(findJobs.data[0].runs);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  //NEED TO MOVE THIS LOGIC TO ONSUBMIT. ONLY FOR TESTING
   useEffect(() => {
-    const fetchData = async () => {
-      console.log('Fetching runs from db ...');
-      try {
-        const findJobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
-          //'http://localhost:3000/api/github/getjobs'
-          withCredentials: true,
-        });
-        console.log('findJobs:', findJobs.data[0].runs);
-        setMetrics(findJobs.data[0].runs);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
     fetchData();
   }, []);
 

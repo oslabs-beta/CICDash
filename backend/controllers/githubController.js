@@ -55,9 +55,9 @@ githubController.getRunIds = async (req, res, next) => {
   console.log(`* Getting all user's workflow runs id's...`); // CL*
 
   // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake'; // HARDCODE
-  const repo = 'unit-12-testing-gha'; // HARDCODE
+  const { owner, repo } = req.query;
+  // const owner = 'ptri-13-cat-snake'; // HARDCODE
+  // const repo = 'unit-12-testing-gha'; // HARDCODE
   console.log('  - Owner pulled from request object: ', owner);
   console.log('  - Repo pulled from request object: ', repo);
 
@@ -107,9 +107,9 @@ githubController.getJobs = async (req, res, next) => {
     console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
 
     // Grab owner and repo from the request
-    // const { owner, repo } = req.body;
-    const owner = 'ptri-13-cat-snake'; // HARDCODE
-    const repo = 'unit-12-testing-gha'; // HARDCODE
+    const { owner, repo } = req.query;
+    // const owner = 'ptri-13-cat-snake'; // HARDCODE
+    // const repo = 'unit-12-testing-gha'; // HARDCODE
     console.log('  - Owner pulled from request object: ', owner);
     console.log('  - Repo pulled from request object: ', repo);
 

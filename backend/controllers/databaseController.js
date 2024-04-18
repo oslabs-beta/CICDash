@@ -50,9 +50,9 @@ databaseController.getUniqueRunIds = async (req, res, next) => {
   console.log(`* Checking if run ids exist in database...`); // CL*
 
   // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const { owner, repo } = req.query;
+  // const owner = 'ptri-13-cat-snake';
+  // const repo = 'unit-12-testing-gha';
   const { allRunIds } = res.locals;
 
   try {
@@ -96,9 +96,9 @@ databaseController.saveJobs = async (req, res, next) => {
     console.log('* Saving all the jobs data associated w/ each workflow run to mongodb...'); // CL*
 
     // Grab owner and repo from the request
-    // const { owner, repo } = req.body;
-    const owner = 'ptri-13-cat-snake'; // HARDCODE
-    const repo = 'unit-12-testing-gha'; // HARDCODE
+    const { owner, repo } = req.query;
+    // const owner = 'ptri-13-cat-snake'; // HARDCODE
+    // const repo = 'unit-12-testing-gha'; // HARDCODE
     console.log('  - Owner pulled from request object: ', owner);
     console.log('  - Repo pulled from request object: ', repo);
 
@@ -205,14 +205,13 @@ databaseController.saveJobs = async (req, res, next) => {
 };
 
 databaseController.findRuns = async (req, res, next) => {
-  console.log(`* Checking existing runs in database...`); // CL*
+  console.log(`* Fetching existing runs in database...`); // CL*
   try {
     // Query the database to check if the username has a runs entry with any of the run IDs
     const existingRuns = await User.find({ username: req.cookies.username });
-    console.log('existingRuns: ', existingRuns);
+    console.log(` - Sent existing runs to frontend.`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
-
     return next();
   } catch (error) {
     console.error('Error finding runs:', error);
