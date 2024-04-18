@@ -178,7 +178,7 @@ const Mvpmetrics = () => {
             {/* <label>Github Username</label> */}
             <input
               type='text'
-              placeholder='Enter your GitHub Username'
+              placeholder='Enter GitHub Username'
               id='username'
               value={username}
               // on login, username is saved in cookies.
@@ -188,7 +188,7 @@ const Mvpmetrics = () => {
 
             <input
               type='text'
-              placeholder='Enter the Repository name'
+              placeholder='Enter Repository name'
               id='repo'
               value={repo}
               onChange={e => setRepo(e.target.value)}
