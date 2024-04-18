@@ -8,7 +8,7 @@ const databaseController = require('../controllers/databaseController.js');
 const router = express();
 
 router.get('/findRuns', databaseController.findRuns, (req, res, next) => {
-  return res.status(200).json(res.locals.existingRuns);
+  return res.status(200).json(res.locals.userAndRepo);
 });
 
 module.exports = router;

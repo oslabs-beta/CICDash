@@ -222,7 +222,18 @@ databaseController.findRuns = async (req, res, next) => {
     console.error('Error finding runs:', error);
   }
 };
-
+// 
+databaseController.saveFrontendData = async (req, res, next) => {
+  console.log(`* saveFrontendData...`); // CL*
+  try {
+    console.log('view this: ', req.body)
+    const { username, repo } = req.body; // Retrieve data from request body
+    res.locals.userAndRepo = { username, repo }; // Store data in res.locals
+    return next();
+  } catch (error) {
+    console.error('Error saving username or repo:', error);
+  }
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = databaseController;
