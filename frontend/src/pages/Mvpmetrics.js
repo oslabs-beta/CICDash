@@ -222,11 +222,11 @@ const Mvpmetrics = () => {
     const fetchData = async () => {
       console.log('Fetching runs from db ...');
       try {
-        const findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+        let findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
           withCredentials: true,
         });
         console.log('findJobs:', findJobs.data[0].runs);
-        reformatData(findJobs.data[0].runs);
+        reformatData(findJobs.data[0].runs.reverse());
         console.log('shapedMetrics:', shapedMetrics);
         setMetricState(findJobs.data[0].runs);
         console.log('metricState after fetch: ', metricState);
