@@ -141,14 +141,21 @@ const Mvpmetrics = () => {
     }
   }, [username]);
 
-  const handleSubmit = e => {
+    const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-  };
+    console.log('username', username);
+    console.log('repo goes here', selectedRepo);
+  }
 
-  const handleRepoChange = e => {
-    setSelectedRepo(e.target.value);
-  };
+// logic to get the name of the repo
+const handleRepoChange = e => {
+  const selectedRepoUrl = e.target.value;
+  setSelectedRepo(selectedRepoUrl);
+  const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
+  setSelectedRepo(repoName); //returns repo name to save, but wont display properly
+
+  // setSelectedRepo(e.target.value);// returns repo url
+};
 
   return (
     <>
