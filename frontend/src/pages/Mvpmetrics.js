@@ -139,78 +139,126 @@ const Mvpmetrics = () => {
   }, []);
 
   // ____username function below
+  // const [username, setUsername] = useState('');
+  // const [repo, setRepo] = useState('');
+
+  // const handleSubmit = async e => {
+  //   e.preventDefault();
+  //         console.log('Username:', username);
+  //         console.log('Repo:', repo);
+  //   if (username.trim() === '' || repo.trim() === '') {
+  //     // If either field is empty, do not submit
+  //     alert('Please fill in both fields');
+
+  //     return;
+  //   }
+
+  //   try {
+  //     // Make a POST request to your backend server
+  //     const response = await axios.post('http://localhost:8080/results', {
+  //       username,
+  //       repo,
+  //     });
+
+  //     // Handle the response accordingly
+  //     console.log('Response console.log:', response.data);
+
+  //     // Clear input fields after successful submission
+  //     setUsername('');
+  //     setRepo('');
+  //   } catch (error) {
+  //     // Handle errors
+  //     console.error('Error in MVPmetrics username and repo:', error);
+  //   }
+  // };
+
     const [username, setUsername] = useState('');
     const [repo, setRepo] = useState('');
+    // const handleSubmit = e => {
+    //   e.preventDefault();
+    // };
+
+    //   const handleSubmit = (e) => {
+    //   e.preventDefault();
+    //   console.log('submitted username and repo', username, repo);
+    //   console.log('username', username);
+    //   console.log('repo', repo);
+    // }
 
     const handleSubmit = async e => {
+      console.log('before handlesubmit')
       e.preventDefault();
+      console.log('after handlesubmit');
 
       if (username.trim() === '' || repo.trim() === '') {
         // If either field is empty, do not submit
         alert('Please fill in both fields');
         return;
       }
+        console.log('Username:', username);
+        console.log('Repo:', repo);
 
       try {
+        console.log('Username try block:', username); //works
+        console.log('Repo try block:', repo); //works
         // Make a POST request to your backend server
-        const response = await axios.post('http://localhost:8080/results', {
+        const response = await axios.post('http://localhost:3000/results', {
           username,
           repo,
         });
 
         // Handle the response accordingly
-        console.log('Response console.log:', response.data);
+        console.log('Response:', response.data);
 
         // Clear input fields after successful submission
         setUsername('');
         setRepo('');
       } catch (error) {
         // Handle errors
-        console.error('Error in MVPmetrics username and repo:', error);
+        console.error('Error:', error);
       }
     };
 
-    return (
-      <>
-        <div className='dataEntry'>
-          <label>Please enter your Username and Repository below</label>
-          <form>
-            {/* <label>Github Username</label> */}
-            <input
-              type='text'
-              placeholder='Enter GitHub Username'
-              id='username'
-              value={username}
-              // on login, username is saved in cookies.
-              onChange={e => setUsername(e.target.value)}
-            />
-            {/* <label>Repository Name</label> */}
+  // //updated to on submit from onclick on 196
+  return (
+    <>
+      <div className='dataEntry'>
+        <label>Please enter your Username and Repository below</label>
+        <form onSubmit={handleSubmit}>
+          {/* <label>Github Username</label> */}
+          <input
+            type='text'
+            placeholder='Enter GitHub Username'
+            id='username'
+            value={username}
+            // on login, username is saved in cookies.
+            onChange={e => setUsername(e.target.value)}
+          />
+          {/* <label>Repository Name</label> */}
 
-            <input
-              type='text'
-              placeholder='Enter Repository name'
-              id='repo'
-              value={repo}
-              onChange={e => setRepo(e.target.value)}
-            />
-            <button type='submit' onClick={handleSubmit}>
-              Submit
-            </button>
-          </form>
+          <input
+            type='text'
+            placeholder='Enter Repository name'
+            id='repo'
+            value={repo}
+            onChange={e => setRepo(e.target.value)}
+          />
+          <button type='submit'>Submit</button>
+        </form>
+      </div>
+      <div className={'grid-container'}>
+        <div className={'viz-a'}>
+          <Bar options={options} data={data} />
         </div>
-        <div className={'grid-container'}>
-          <div className={'viz-a'}>
-            <Bar options={options} data={data} />
-          </div>
-          <div className={'viz-b'}>
-            <Pie data={pieData} />
-          </div>
-          <div className={'viz-c'}>
-            <Bar options={horizBarOptions} data={horizBarData} />
-          </div>
+        <div className={'viz-b'}>
+          <Pie data={pieData} />
         </div>
-      </>
-    );
+        <div className={'viz-c'}>
+          <Bar options={horizBarOptions} data={horizBarData} />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Mvpmetrics;
