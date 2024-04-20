@@ -120,129 +120,58 @@ export const horizBarData = {
 };
 
 const Mvpmetrics = () => {
-  const [metrics, setMetrics] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log('Fetching runs from db ...');
-      try {
-        const findJobs = await axios.get('http://localhost:3000/api/github/saveRuns', {
-          //'http://localhost:3000/api/github/getjobs'
-          withCredentials: true,
-        });
-        console.log('findJobs:', findJobs.data[0].runs);
-        setMetrics(findJobs.data[0].runs);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // ____username function below
-  // const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('');
   // const [repo, setRepo] = useState('');
+  const [repos, setRepos] = useState([]);
+  const [selectedRepo, setSelectedRepo] = useState('');
 
-  // const handleSubmit = async e => {
-  //   e.preventDefault();
-  //         console.log('Username:', username);
-  //         console.log('Repo:', repo);
-  //   if (username.trim() === '' || repo.trim() === '') {
-  //     // If either field is empty, do not submit
-  //     alert('Please fill in both fields');
+  useEffect(() => {
+    if (username) {
+      fetch(`https://api.github.com/users/${username}/repos`)
+        .then(response => response.json())
+        .then(data => {
+          setRepos(
+            data.map(repo => ({
+              name: repo.name,
+              url: repo.html_url,
+            })),
+          );
+        })
+        .catch(error => console.error('Error fetching repositories:', error));
+    }
+  }, [username]);
 
-  //     return;
-  //   }
+  const handleSubmit = e => {
+    e.preventDefault();
+    // Handle form submission
+  };
 
-  //   try {
-  //     // Make a POST request to your backend server
-  //     const response = await axios.post('http://localhost:8080/results', {
-  //       username,
-  //       repo,
-  //     });
+  const handleRepoChange = e => {
+    setSelectedRepo(e.target.value);
+  };
 
-  //     // Handle the response accordingly
-  //     console.log('Response console.log:', response.data);
-
-  //     // Clear input fields after successful submission
-  //     setUsername('');
-  //     setRepo('');
-  //   } catch (error) {
-  //     // Handle errors
-  //     console.error('Error in MVPmetrics username and repo:', error);
-  //   }
-  // };
-
-    const [username, setUsername] = useState('');
-    const [repo, setRepo] = useState('');
-    // const handleSubmit = e => {
-    //   e.preventDefault();
-    // };
-
-    //   const handleSubmit = (e) => {
-    //   e.preventDefault();
-    //   console.log('submitted username and repo', username, repo);
-    //   console.log('username', username);
-    //   console.log('repo', repo);
-    // }
-
-    const handleSubmit = async e => {
-      console.log('before handlesubmit')
-      e.preventDefault();
-      console.log('after handlesubmit');
-
-      if (username.trim() === '' || repo.trim() === '') {
-        // If either field is empty, do not submit
-        alert('Please fill in both fields');
-        return;
-      }
-        console.log('Username:', username);
-        console.log('Repo:', repo);
-
-      try {
-        console.log('Username try block:', username); //works
-        console.log('Repo try block:', repo); //works
-        // Make a POST request to your backend server
-        const response = await axios.post('http://localhost:3000/results', {
-          username,
-          repo,
-        });
-
-        // Handle the response accordingly
-        console.log('Response:', response.data);
-
-        // Clear input fields after successful submission
-        setUsername('');
-        setRepo('');
-      } catch (error) {
-        // Handle errors
-        console.error('Error:', error);
-      }
-    };
-
-  // //updated to on submit from onclick on 196
   return (
     <>
-      <div className='dataEntry'>
+      <div className='searchBar'>
         <label>Please enter your Username and Repository below</label>
         <form onSubmit={handleSubmit}>
-          {/* <label>Github Username</label> */}
           <input
             type='text'
             placeholder='Enter GitHub Username'
             id='username'
             value={username}
-            // on login, username is saved in cookies.
             onChange={e => setUsername(e.target.value)}
           />
-          {/* <label>Repository Name</label> */}
-
-          <input
-            type='text'
-            placeholder='Enter Repository name'
-            id='repo'
-            value={repo}
-            onChange={e => setRepo(e.target.value)}
-          />
+          {repos.length > 0 && (
+            <select value={selectedRepo} onChange={handleRepoChange}>
+              <option value=''>Select a repository</option>
+              {repos.map(repo => (
+                <option key={repo.name} value={repo.url}>
+                  {repo.name}
+                </option>
+              ))}
+            </select>
+          )}
           <button type='submit'>Submit</button>
         </form>
       </div>
@@ -260,5 +189,6 @@ const Mvpmetrics = () => {
     </>
   );
 };
+
 
 export default Mvpmetrics;

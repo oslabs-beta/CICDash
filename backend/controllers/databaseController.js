@@ -10,7 +10,7 @@ databaseController.registerUser = async (req, res, next) => {
   const username = res.locals.apiResponseData.login;
   const accessToken = res.locals.authResponseData.access_token;
   const refreshToken = res.locals.authResponseData.refresh_token;
-  console.log('  - username pulled from res.locals: ', username);
+  console.log('  - username pulled from res.locals: ', username); //---This is the place username comes into play
   console.log('  - Access Token pulled from res.locals: ', accessToken);
   console.log('  - Refresh Token pulled from res.locals: ', refreshToken);
 
@@ -20,6 +20,7 @@ databaseController.registerUser = async (req, res, next) => {
     console.log(
       '  - User already has a profile in database, updating Access Token w/ Refresh Token',
     ); // CL*
+    console.log('grab the information here')
     const updatedProfile = await User.findOneAndUpdate(
       { username: username },
       { refresh_token: refreshToken },
