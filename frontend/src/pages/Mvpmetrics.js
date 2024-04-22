@@ -10,11 +10,25 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  PointElement,
+  LineElement,
 } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
 import faker from 'faker'; //this is for mock data
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement,
+);
+import colorLib from '@kurkle/color';
 
+//Reads shapedMetrics for conversion to chartData for ChartJS display
 const genChartData = (arr) => {
   arr.forEach(el => {
     chartData.labels.push(el.label);
@@ -23,15 +37,22 @@ const genChartData = (arr) => {
     chartData.pieData[0] += el.failure;
     chartData.pieData[1] += el.success;
     chartData.horizBarData.push(calcAvg(el.runTimes) - shapedMetrics.lifetimeAvg);
+    chartData.straightLine.push(shapedMetrics.lifetimeAvg);
+    chartData.monthAvg.push(el.monthAvg);
   });
+  // test1 = chartData.horizBarData.reduce((max, num) => Math.max(max, Math.abs(num)), 0);
+  // horizBarOptions.scales.x.min = -test1;
+  // horizBarOptions.scales.x.min = test1;
 }
-//This populates ChartJS
+//This is the data for ChartJS
 const chartData = {
   labels: [],
   success: [], //[1, 2, 3, 4, 5, 6, 7]
   failure: [], //[5, 5, 5, 5, 5, 5, 5]
   pieData: [0, 0], //[12, 19] [Failure, Success]
   horizBarData: [], //[-5, 12, -13, 4, -5, 6, -7] Month avg workflow run - Lifetime avg workflow run (seconds)
+  straightLine: [], //Lifetime average run line
+  monthAvg: [], //Monthly average
 };
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -45,6 +66,7 @@ const createMonthYear = isoDate => {
     name: `${month.toLowerCase()}${year}`, //January '24
     label: `${month} '${year}`, //january24
     runTimes: [],
+    monthAvg: null,
     success: 0,
     failure: 0,
     total: 0,
@@ -81,8 +103,7 @@ const shapedMetrics = {
 };
 
 
-//Function to convert JSON object for ChartJS input
-//Iterates through every every object in findJobs.data[0].runs
+//CALCULATE METRICS FROM RUNS ARRAY
 const reformatData = array => {
   let monthObj = {};
   const monthDataArr = []
@@ -117,6 +138,7 @@ const reformatData = array => {
     const runTime = timeDifSeconds(workFlowStart, workFlowEnd);
     monthObj.runTimes.push(runTime);
     shapedMetrics.lifetimeRuns.push(runTime);
+    monthObj.monthAvg = calcAvg(monthObj.runTimes);
   });
   shapedMetrics.monthData = monthDataArr;
   shapedMetrics.lifetimeAvg = calcAvg(shapedMetrics.lifetimeRuns);
@@ -149,6 +171,21 @@ export const options = {
       return delay;
     },
   },
+};
+//CHARTJS UTILS
+export function transparentize(value, opacity) {
+  var alpha = opacity === undefined ? 0.5 : 1 - opacity;
+  return colorLib(value).alpha(alpha).rgbString();
+}
+
+export const CHART_COLORS = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)',
 };
 
 //Vertical Bar Chart
@@ -185,6 +222,9 @@ export const pieData = {
   ],
 };
 
+let test1;
+
+
 //Horizontal Bar Chart
 export const horizBarOptions = {
   indexAxis: 'y',
@@ -203,6 +243,13 @@ export const horizBarOptions = {
       text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
     },
   },
+  scales: {
+    x:
+      {
+        min: -50,
+        max: 50,
+      },
+  },
 };
 export const horizBarData = {
   labels: chartData.labels,
@@ -212,6 +259,45 @@ export const horizBarData = {
       data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+  ],
+};
+
+//Combo Bar Chart
+export const comboBarOptions = {
+  type: 'bar',
+  data: data,
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Monthly vs Lifetime Average (seconds)',
+      },
+    },
+  },
+};
+
+export const comboBarData = {
+  labels: chartData.labels,
+  datasets: [
+    {
+      label: 'Month',
+      data: chartData.monthAvg,
+      borderColor: CHART_COLORS.red,
+      backgroundColor: transparentize(CHART_COLORS.red, 0.5),
+      order: 0,
+    },
+    {
+      label: 'Lifetime',
+      data: chartData.straightLine,
+      borderColor: CHART_COLORS.blue,
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+      type: 'line',
+      order: 1,
     },
   ],
 };
@@ -228,8 +314,6 @@ const Mvpmetrics = () => {
         console.log('findJobs:', findJobs.data[0].runs);
         reformatData(findJobs.data[0].runs.reverse());
         console.log('shapedMetrics:', shapedMetrics);
-        setMetricState(findJobs.data[0].runs);
-        console.log('metricState after fetch: ', metricState);
         reformatData(findJobs.data[0].runs);
         genChartData(shapedMetrics.monthData);
         console.log('chartData: ', chartData);
@@ -238,7 +322,6 @@ const Mvpmetrics = () => {
       }
     };
     fetchData();
-    console.log('metricState immediately after state is updated: ', metricState)
 
   }, []);
 
@@ -255,6 +338,9 @@ const Mvpmetrics = () => {
         </div>
         <div className={'viz-c'}>
           <Bar options={horizBarOptions} data={horizBarData} />
+        </div>
+        <div className={'viz-d'}>
+          <Bar options={comboBarOptions} data={comboBarData} />
         </div>
       </div>
     </>
