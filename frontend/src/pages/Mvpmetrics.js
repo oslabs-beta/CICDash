@@ -13,7 +13,7 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Bar, Pie, Line } from 'react-chartjs-2';
 import faker from 'faker'; //this is for mock data
 ChartJS.register(
   CategoryScale,
@@ -29,7 +29,7 @@ ChartJS.register(
 import colorLib from '@kurkle/color';
 
 //Reads shapedMetrics for conversion to chartData for ChartJS display
-const genChartData = (arr) => {
+const genChartData = arr => {
   arr.forEach(el => {
     chartData.labels.push(el.label);
     chartData.success.push(el.success);
@@ -43,7 +43,7 @@ const genChartData = (arr) => {
   // test1 = chartData.horizBarData.reduce((max, num) => Math.max(max, Math.abs(num)), 0);
   // horizBarOptions.scales.x.min = -test1;
   // horizBarOptions.scales.x.min = test1;
-}
+};
 //This is the data for ChartJS
 const chartData = {
   labels: [],
@@ -53,6 +53,8 @@ const chartData = {
   horizBarData: [], //[-5, 12, -13, 4, -5, 6, -7] Month avg workflow run - Lifetime avg workflow run (seconds)
   straightLine: [], //Lifetime average run line
   monthAvg: [], //Monthly average
+  eachRunLabel: [],
+  eachRunDuration: [],
 };
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -95,6 +97,28 @@ const calcAvg = array => {
   return parseFloat(average.toFixed(1));
 };
 
+const eachRunTime = isoDate => {
+  // Parse the ISO date string
+  const date = new Date(isoDate);
+
+  // Get the month (getMonth() returns 0-11, so add 1 for a 1-12 range)
+  const month = date.getMonth() + 1;
+
+  // Get the day of the month
+  const day = date.getDate();
+
+  // Get hours and minutes
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  // Format hours and minutes to ensure two digits
+  const formattedHours = hours.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+
+  // Format the date string as "month/day time"
+  return `${month}/${day} ${formattedHours}:${formattedMinutes}`;
+};
+
 //New shape of metrics after parsing response of /api/github/findRuns
 const shapedMetrics = {
   lifetimeRuns: [],
@@ -102,11 +126,10 @@ const shapedMetrics = {
   lifetimeAvg: null,
 };
 
-
 //CALCULATE METRICS FROM RUNS ARRAY
 const reformatData = array => {
   let monthObj = {};
-  const monthDataArr = []
+  const monthDataArr = [];
   array.forEach(run => {
     const runMonthYear = getMonthDate(run.started_at); //'january24'
     //check to see if month already exists
@@ -123,14 +146,14 @@ const reformatData = array => {
       // If the month already exists, assign the existing monthObj to monthObj
       monthObj = existingMonth;
     }
-      if (run.conclusion === 'cancelled' || run.conclusion === 'failure') {
-        //get success and failures
-        monthObj.failure++;
-        monthObj.total++;
-      } else if (run.conclusion === 'success') {
-        monthObj.success++;
-        monthObj.total++;
-      }
+    if (run.conclusion === 'cancelled' || run.conclusion === 'failure') {
+      //get success and failures
+      monthObj.failure++;
+      monthObj.total++;
+    } else if (run.conclusion === 'success') {
+      monthObj.success++;
+      monthObj.total++;
+    }
 
     //get workflow run time in seconds
     const workFlowStart = run.steps[0].started_at;
@@ -139,6 +162,9 @@ const reformatData = array => {
     monthObj.runTimes.push(runTime);
     shapedMetrics.lifetimeRuns.push(runTime);
     monthObj.monthAvg = calcAvg(monthObj.runTimes);
+    //create labels for all runs chart
+    chartData.eachRunLabel.push(eachRunTime(workFlowStart));
+    chartData.eachRunDuration.push(runTime);
   });
   shapedMetrics.monthData = monthDataArr;
   shapedMetrics.lifetimeAvg = calcAvg(shapedMetrics.lifetimeRuns);
@@ -222,9 +248,6 @@ export const pieData = {
   ],
 };
 
-let test1;
-
-
 //Horizontal Bar Chart
 export const horizBarOptions = {
   indexAxis: 'y',
@@ -244,11 +267,10 @@ export const horizBarOptions = {
     },
   },
   scales: {
-    x:
-      {
-        min: -50,
-        max: 50,
-      },
+    x: {
+      min: -50,
+      max: 50,
+    },
   },
 };
 export const horizBarData = {
@@ -281,6 +303,37 @@ export const comboBarOptions = {
   },
 };
 
+//Line Chart Options
+export const lineOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Execution Time Trend (seconds)',
+    },
+  },
+  scales: {
+    x: {
+      minRotation: 50,
+    },
+  },
+};
+
+export const lineChartData = {
+  labels: chartData.eachRunLabel,
+  datasets: [
+    {
+      label: 'Run Times (seconds)',
+      data: chartData.eachRunDuration,
+      borderColor: CHART_COLORS.blue,
+      backgroundColor: CHART_COLORS.blue,
+    },
+  ],
+};
+
 export const comboBarData = {
   labels: chartData.labels,
   datasets: [
@@ -303,7 +356,94 @@ export const comboBarData = {
 };
 
 const Mvpmetrics = () => {
-  const [metricState, setMetricState] = useState([]);
+  //Set state for charts
+  const [vertBarChart, setVertBarChart] = useState({
+    labels: chartData.labels,
+    datasets: [
+      {
+        label: 'Success',
+        data: chartData.success,
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+      {
+        label: 'Failure',
+        data: chartData.failure,
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+    ],
+  });
+  const [pieChart, setPieChart] = useState({
+    labels: ['Failure', 'Success'],
+    datasets: [
+      {
+        label: 'Lifetime Workflow Attempts',
+        data: chartData.pieData,
+        backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
+        borderWidth: 1,
+      },
+    ],
+  });
+  const [horizBarChart, setHorizBarChart] = useState({
+    labels: chartData.labels,
+    datasets: [
+      {
+        label: '2024',
+        data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+    ],
+  });
+  const [horizBarOptions, setHorizBarOptions] = useState({
+    indexAxis: 'y',
+    elements: {
+      bar: {
+        borderWidth: 2,
+      },
+    },
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right',
+      },
+      title: {
+        display: true,
+        text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+      },
+    },
+  });
+  const [comboBarChart, setComboBarChart] = useState({
+    labels: chartData.labels,
+    datasets: [
+      {
+        label: 'Month',
+        data: chartData.monthAvg,
+        borderColor: CHART_COLORS.red,
+        backgroundColor: transparentize(CHART_COLORS.red, 0.5),
+        order: 0,
+      },
+      {
+        label: 'Lifetime',
+        data: chartData.straightLine,
+        borderColor: CHART_COLORS.blue,
+        backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+        type: 'line',
+        order: 1,
+      },
+    ],
+  });
+  const [lineChart, setLineChart] = useState({
+    labels: chartData.eachRunLabel,
+    datasets: [
+      {
+        label: 'Run Times (seconds)',
+        data: chartData.eachRunDuration,
+        borderColor: CHART_COLORS.blue,
+        backgroundColor: CHART_COLORS.blue,
+      },
+    ],
+  });
   useEffect(() => {
     const fetchData = async () => {
       console.log('Fetching runs from db ...');
@@ -314,33 +454,127 @@ const Mvpmetrics = () => {
         console.log('findJobs:', findJobs.data[0].runs);
         reformatData(findJobs.data[0].runs.reverse());
         console.log('shapedMetrics:', shapedMetrics);
-        reformatData(findJobs.data[0].runs);
         genChartData(shapedMetrics.monthData);
         console.log('chartData: ', chartData);
+        //Load Chart JS data after fetch
+        setVertBarChart({
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Success',
+              data: chartData.success,
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+            },
+            {
+              label: 'Failure',
+              data: chartData.failure,
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            },
+          ],
+        });
+        setPieChart({
+          labels: ['Failure', 'Success'],
+          datasets: [
+            {
+              label: 'Lifetime Workflow Attempts',
+              data: chartData.pieData,
+              backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
+              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
+              borderWidth: 1,
+            },
+          ],
+        });
+        const maxVal = Math.max.apply(null, chartData.horizBarData) + 10; //for use in centering horiz bar chart
+        setHorizBarOptions({
+          indexAxis: 'y',
+          elements: {
+            bar: {
+              borderWidth: 2,
+            },
+          },
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+            },
+            title: {
+              display: true,
+              text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+            },
+          },
+          scales: {
+            x: {
+              min: -maxVal,
+              max: maxVal,
+            },
+          },
+        });
+        setHorizBarChart({
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: '2024',
+              data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
+              borderColor: CHART_COLORS.red,
+              backgroundColor: CHART_COLORS.orange,
+            },
+          ],
+        });
+        setComboBarChart({
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Month',
+              data: chartData.monthAvg,
+              borderColor: CHART_COLORS.purple,
+              backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
+              order: 0,
+            },
+            {
+              label: 'Lifetime',
+              data: chartData.straightLine,
+              borderColor: CHART_COLORS.blue,
+              backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+              type: 'line',
+              order: 1,
+            },
+          ],
+        });
+        setLineChart({
+          labels: chartData.eachRunLabel,
+          datasets: [
+            {
+              label: 'Run Times (seconds)',
+              data: chartData.eachRunDuration,
+              borderColor: CHART_COLORS.green,
+              backgroundColor: CHART_COLORS.green,
+            },
+          ],
+        });
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
-
   }, []);
-
-
 
   return (
     <>
       <div className={'grid-container'}>
         <div className={'viz-a'}>
-          <Bar options={options} data={data} />
+          <Bar options={options} data={vertBarChart} />
         </div>
         <div className={'viz-b'}>
-          <Pie data={pieData} />
+          <Pie data={pieChart} />
         </div>
-        <div className={'viz-c'}>
-          <Bar options={horizBarOptions} data={horizBarData} />
+        <div>
+          <Bar options={horizBarOptions} data={horizBarChart} />
         </div>
-        <div className={'viz-d'}>
-          <Bar options={comboBarOptions} data={comboBarData} />
+        <div>
+          <Bar options={comboBarOptions} data={comboBarChart} />
+        </div>
+        <div>
+          <Line options={lineOptions} data={lineChart} />;
         </div>
       </div>
     </>
