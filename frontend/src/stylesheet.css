@@ -44,13 +44,35 @@ html {
 }
 
 /* -------------------------------------------------- */
-/* HOME CONTENT */
+/* HOME PAGE SECTIONS */
 .Home-content {
   /* Content Position */
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: calc(100vh - 100px); /* Adjust for scrolling on page */
+}
+
+.Home-content-2 {
+  /* Content Position */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Size */
+  height: 1000px;
+  /* Style */
+  background-color: red;
+}
+
+.Home-content-3 {
+  /* Content Position */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Size */
+  height: 1000px;
+  /* Style */
+  background-color: #00bf63;
 }
 
 /* -------------------------------------------------- */
@@ -72,6 +94,66 @@ html {
   /* Style */
   font-weight: 100;
   color: gray;
+}
+
+.Home-content-2 h2 {
+  /* Size */
+  font-size: 54px;
+  /* Position */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: #00bf63;
+}
+
+.Home-content-2 h3 {
+  /* Size */
+  font-size: 26px;
+  /* Positon */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: white;
+}
+
+.Home-content-3 h2 {
+  /* Size */
+  font-size: 54px;
+  /* Position */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: white;
+}
+
+.Home-content-3 h3 {
+  /* Size */
+  font-size: 26px;
+  /* Positon */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: gold;
+}
+
+/* -------------------------------------------------- */
+/* TEAM MEMBERS */
+.team-members {
+  /* Content Position */
+  display: flex;
+  align-items: center;
+  padding: 30px;
+}
+
+.member {
+  padding: 50px;
+  margin-right: 10px;
+  /* background-color: red; */
+  background-image: 'frontend/assets/john_doe.jpg';
 }
 
 /* -------------------------------------------------- */
@@ -102,7 +184,7 @@ html {
 }
 
 /* -------------------------------------------------- */
-/* METRICS GIF */
+/* GIFS */
 .metrics-gif {
   /* Size */
   width: 1000px;
@@ -110,6 +192,14 @@ html {
   position: absolute;
   z-index: -1;
   margin-top: 30px;
+}
+
+.green-viz-gif {
+  /* Size */
+  width: 100vw;
+  height: 83vh;
+  /* Position */
+  position: absolute;
 }
 
 /* -------------------------------------------------- */

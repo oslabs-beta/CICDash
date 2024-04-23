@@ -1,7 +1,31 @@
 import React from 'react';
 import logo from '/frontend/assets/cicdeez_logo_h.png';
 import metricsGif from '/frontend/assets/metrics.gif';
+import greenVizGif from '/frontend/assets/gold-visualizer.gif';
 import '/frontend/src/stylesheet.css';
+
+const teamMembers = [
+  {
+    name: 'Arthur Cheung',
+    pictureUrl: '/frontend/assets/cicdeez_logo_v.png',
+    linkedInUrl: 'https://www.linkedin.com/in/arthurtcheung/',
+  },
+  {
+    name: 'Russ Apolonio',
+    pictureUrl: '/frontend/assets/john_doe.jpg',
+    linkedInUrl: 'https://www.linkedin.com/in/russellapolonio/',
+  },
+  {
+    name: 'Jason Kuroda',
+    pictureUrl: '/frontend/assets/john_doe.jpg',
+    linkedInUrl: 'https://www.linkedin.com/in/jasonkuroda/',
+  },
+  {
+    name: 'Garrett Zeal',
+    pictureUrl: '/frontend/assets/john_doe.jpg',
+    linkedInUrl: 'https://www.linkedin.com/in/garrettzeal/',
+  },
+];
 
 const Home = () => {
   return (
@@ -42,6 +66,31 @@ const Home = () => {
           </button>
         </a>
         <img src={metricsGif} alt='Metrics GIF' className='metrics-gif' />
+      </section>
+
+      <section className='Home-content-2'>
+        <h2>About</h2>
+        <h3>Section 2 sub-header</h3>
+        <img src={greenVizGif} alt='Green Viz GIF' className='green-viz-gif' />
+      </section>
+
+      <section className='Home-content-3'>
+        <h2>Contact</h2>
+        <h3>Meet Our Team</h3>
+        <div className='team-members'>
+          {teamMembers.map((member, index) => (
+            <a
+              key={index}
+              href={member.linkedInUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='member'
+            >
+              <img src={member.pictureUrl} alt='profile picture' />
+              <p>{member.name}</p>
+            </a>
+          ))}
+        </div>
       </section>
     </div>
   );
