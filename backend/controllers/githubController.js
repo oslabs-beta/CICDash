@@ -149,4 +149,48 @@ githubController.getJobs = async (req, res, next) => {
   }
 };
 
+// Test frontend code below
+githubController.install = async (req, res, next) => {
+  console.log('* This is where we want to look right now');
+
+  // Grab Authorization Code provided by GitHub after the user logs in w/ GitHub
+
+  // Pass on the authentication data sent back by Github (ie Access Token, Refresh Token)
+  // console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
+
+  // Grab Access Token from authentication data sent back by Github
+  // console.log('  - Access token:', accessToken); // CL*
+
+  // GET request to Github api for user data using Access Token
+  // const installResponse = await axios({
+  //   method: 'get',
+  //   url: `https://api.github.com/installation/repositories`,
+  //   headers: {
+  //     Authorization: 'token ' + res.locals.authResponseData.accessToken,
+  //     Accept: 'application/vnd.github.v3+json',
+  //   },
+  // });
+
+  axios
+    .get('https://api.github.com/installation/repos', {
+      headers: {
+        Authorization: 'token ' + res.locals.authResponseData.accessToken,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching repositories:', error);
+    });
+
+  // Pass on the user data sent back by Github (ie Username)
+  // res.locals.apiResponseData = apiResponse.data;
+  // console.log('  - installResponse by Github:', installResponse); // CL*
+  // console.log('  - User data sent back by Github username hopefully:', installResponse); // CL*
+  // res.locals.loginUsername = apiResponse.data.login;
+  return next();
+};
+
 module.exports = githubController;

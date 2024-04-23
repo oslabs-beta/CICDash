@@ -145,6 +145,8 @@ const Mvpmetrics = () => {
     e.preventDefault();
     console.log('username', username);
     console.log('repo goes here', selectedRepo);
+    const test = fetch(`https://api.github.com/users/${username}/repos`);
+    console.log('test', test);
   }
 
 // logic to get the name of the repo
@@ -160,7 +162,7 @@ const handleRepoChange = e => {
   return (
     <>
       <div className='searchBar'>
-        <label>Please enter your Username and Repository below</label>
+        <label>Please enter your Username and select a Repository</label>
         <form onSubmit={handleSubmit}>
           <input
             type='text'
