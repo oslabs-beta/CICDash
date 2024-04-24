@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@kurkle/color": "^0.3.2",
     "@octokit/rest": "^20.0.2",
     "axios": "^1.6.7",
     "babel-loader": "^9.1.3",
