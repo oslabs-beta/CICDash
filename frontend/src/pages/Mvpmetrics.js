@@ -120,10 +120,11 @@ export const horizBarData = {
 };
 
 const Mvpmetrics = () => {
-  const [username, setUsername] = useState('');
-  // const [repo, setRepo] = useState('');
-  const [repos, setRepos] = useState([]);
-  const [selectedRepo, setSelectedRepo] = useState('');
+  const [username, setUsername] = useState(''); //for type in field
+  const [repo, setRepo] = useState(''); //for type in field
+  const [repos, setRepos] = useState([]); //for dropdown menu
+  const [selectedRepo, setSelectedRepo] = useState(''); //for drop down
+  const [owner, setOwner] = useState(''); //for type in field
 
   useEffect(() => {
     if (username) {
@@ -141,28 +142,34 @@ const Mvpmetrics = () => {
     }
   }, [username]);
 
-    const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     console.log('username', username);
-    console.log('repo goes here', selectedRepo);
+    console.log('repo goes here', repo);
     const test = fetch(`https://api.github.com/users/${username}/repos`);
     console.log('test', test);
-  }
+  };
+// for the handtyped field
+  const handleSubmitTyped = e => {
+    e.preventDefault();
+    console.log('owner', owner);
+    console.log('repo goes here', repo);
+  };
 
-// logic to get the name of the repo
-const handleRepoChange = e => {
-  const selectedRepoUrl = e.target.value;
-  setSelectedRepo(selectedRepoUrl);
-  const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
-  setSelectedRepo(repoName); //returns repo name to save, but wont display properly
+  // logic to get the name of the repo
+  const handleRepoChange = e => {
+    const selectedRepoUrl = e.target.value;
+    setSelectedRepo(selectedRepoUrl);
+    const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
+    // setSelectedRepo(repoName); //returns repo name to save, but wont display properly
 
-  // setSelectedRepo(e.target.value);// returns repo url
-};
+    setSelectedRepo(e.target.value); // returns repo url
+  };
 
   return (
     <>
       <div className='searchBar'>
-        <label>Please enter your Username and select a Repository</label>
+        <label>Please enter your Username and select a public Repository</label>
         <form onSubmit={handleSubmit}>
           <input
             type='text'
@@ -184,6 +191,28 @@ const handleRepoChange = e => {
           <button type='submit'>Submit</button>
         </form>
       </div>
+
+      <div className='searchBar'>
+        <label>Please enter your Owner and Repository</label>
+        <form onSubmit={handleSubmitTyped}>
+          <input
+            type='text'
+            placeholder='Enter Owner Username'
+            id='owner'
+            value={owner}
+            onChange={e => setOwner(e.target.value)}
+          />
+          <input
+            type='text'
+            placeholder='Enter Repository Name'
+            id='repo'
+            value={repo}
+            onChange={e => setRepo(e.target.value)}
+          />
+          <button type='submit'>Submit</button>
+        </form>
+      </div>
+
       <div className={'grid-container'}>
         <div className={'viz-a'}>
           <Bar options={options} data={data} />
