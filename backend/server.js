@@ -45,7 +45,7 @@ mongoose
 // Route handlers
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
-app.use('/results', userRoutes); //check userRoutes and databaseController.saveFrontendData,
+app.use('/results',userRoutes); //check userRoutes and databaseController.saveFrontendData,
 
 
 

@@ -123,6 +123,26 @@ const owner = 'ptri-13-cat-snake'; // HARDCODE
 const repo = 'unit-12-testing-gha'; // HARDCODE
 
 const Mvpmetrics = () => {
+  const [username, setUsername] = useState('');
+  // const [repo, setRepo] = useState('');
+  const [repos, setRepos] = useState([]);
+  const [selectedRepo, setSelectedRepo] = useState('');
+
+  useEffect(() => {
+    if (username) {
+      fetch(`https://api.github.com/users/${username}/repos`)
+        .then(response => response.json())
+        .then(data => {
+          setRepos(
+            data.map(repo => ({
+              name: repo.name,
+              url: repo.html_url,
+            })),
+          );
+        })
+        .catch(error => console.error('Error fetching repositories:', error));
+    }
+  }, [username]);
   //create metric state
   const [metrics, setMetrics] = useState([]);
 
@@ -154,75 +174,63 @@ const Mvpmetrics = () => {
     const [username, setUsername] = useState('');
     const [repo, setRepo] = useState('');
 
-    const handleSubmit = async e => {
-      e.preventDefault();
+    const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('username', username);
+    console.log('repo goes here', selectedRepo);
+    const test = fetch(`https://api.github.com/users/${username}/repos`);
+    console.log('test', test);
+  }
 
-      if (username.trim() === '' || repo.trim() === '') {
-        // If either field is empty, do not submit
-        alert('Please fill in both fields');
-        return;
-      }
+// logic to get the name of the repo
+const handleRepoChange = e => {
+  const selectedRepoUrl = e.target.value;
+  setSelectedRepo(selectedRepoUrl);
+  const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
+  setSelectedRepo(repoName); //returns repo name to save, but wont display properly
 
-      try {
-        // Make a POST request to your backend server
-        const response = await axios.post('http://localhost:8080/results', {
-          username,
-          repo,
-        });
-
-        // Handle the response accordingly
-        console.log('Response console.log:', response.data);
-
-        // Clear input fields after successful submission
-        setUsername('');
-        setRepo('');
-      } catch (error) {
-        // Handle errors
-        console.error('Error in MVPmetrics username and repo:', error);
-      }
-    };
-
-    return (
-      <>
-        <div className='dataEntry'>
-          <label>Please enter your Username and Repository below</label>
-          <form>
-            {/* <label>Github Username</label> */}
-            <input
-              type='text'
-              placeholder='Enter GitHub Username'
-              id='username'
-              value={username}
-              // on login, username is saved in cookies.
-              onChange={e => setUsername(e.target.value)}
-            />
-            {/* <label>Repository Name</label> */}
-
-            <input
-              type='text'
-              placeholder='Enter Repository name'
-              id='repo'
-              value={repo}
-              onChange={e => setRepo(e.target.value)}
-            />
-            <button type='submit' onClick={handleSubmit}>
-              Submit
-            </button>
-          </form>
-        </div>
-        <div className={'grid-container'}>
-          <div className={'viz-a'}>
-            <Bar options={options} data={data} />
-          </div>
-          <div className={'viz-b'}>
-            <Pie data={pieData} />
-          </div>
-          <div className={'viz-c'}>
-            <Bar options={horizBarOptions} data={horizBarData} />
-          </div>
-        </div>
-      </>
-    );
+  // setSelectedRepo(e.target.value);// returns repo url
 };
+
+  return (
+    <>
+      <div className='searchBar'>
+        <label>Please enter your Username and select a Repository</label>
+        <form onSubmit={handleSubmit}>
+          <input
+            type='text'
+            placeholder='Enter GitHub Username'
+            id='username'
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+          />
+          {repos.length > 0 && (
+            <select value={selectedRepo} onChange={handleRepoChange}>
+              <option value=''>Select a repository</option>
+              {repos.map(repo => (
+                <option key={repo.name} value={repo.url}>
+                  {repo.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button type='submit'>Submit</button>
+        </form>
+      </div>
+      <div className={'grid-container'}>
+        <div className={'viz-a'}>
+          <Bar options={options} data={data} />
+        </div>
+        <div className={'viz-b'}>
+          <Pie data={pieData} />
+        </div>
+        <div className={'viz-c'}>
+          <Bar options={horizBarOptions} data={horizBarData} />
+        </div>
+      </div>
+    </>
+  );
+};
+
 
 export default Mvpmetrics;
