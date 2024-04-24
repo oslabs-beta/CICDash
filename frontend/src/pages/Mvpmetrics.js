@@ -119,15 +119,17 @@ export const horizBarData = {
   ],
 };
 
-const owner = 'ptri-13-cat-snake'; // HARDCODE
-const repo = 'unit-12-testing-gha'; // HARDCODE
+/////////////////////////////////////////////////////////////////////////////////////
 
 const Mvpmetrics = () => {
-  const [username, setUsername] = useState(''); //for type in field
-  const [repo, setRepo] = useState(''); //for type in field
-  const [repos, setRepos] = useState([]); //for dropdown menu
-  const [selectedRepo, setSelectedRepo] = useState(''); //for drop down
+  const [username, setUsername] = useState(''); //for username to populate dropdown options
+  const [repos, setRepos] = useState([]); //for dropdown menu options
+  const [selectedRepo, setSelectedRepo] = useState(''); //for selection from dropdown
+
   const [owner, setOwner] = useState(''); //for type in field
+  const [repo, setRepo] = useState(''); //for type in field
+
+  const [metrics, setMetrics] = useState([]);
 
   useEffect(() => {
     if (username) {
@@ -144,15 +146,21 @@ const Mvpmetrics = () => {
         .catch(error => console.error('Error fetching repositories:', error));
     }
   }, [username]);
-  //create metric state
-  const [metrics, setMetrics] = useState([]);
+
+  // logic to get the name of the repo
+  const handleRepoChange = e => {
+    const selectedRepoUrl = e.target.value;
+    setSelectedRepo(selectedRepoUrl);
+    const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
+    // setSelectedRepo(repoName); //returns repo name to save, but wont display properly
+    setSelectedRepo(e.target.value); // returns repo url
+  };
 
   //declare fetchData helper function to get most updated metrics and save to state
   const fetchData = async () => {
     console.log('* Fetching runs from db ...');
     try {
       const findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
-        //'http://localhost:3000/api/github/getjobs'
         withCredentials: true,
         params: {
           owner: owner,
@@ -160,20 +168,21 @@ const Mvpmetrics = () => {
         },
       });
       console.log(' - Saving runs from database to state');
+      console.log(findJobs.data[0]);
       setMetrics(findJobs.data[0].runs);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  //NEED TO MOVE THIS LOGIC TO ONSUBMIT. ONLY FOR TESTING
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // NEED TO MOVE THIS LOGIC TO ONSUBMIT. ONLY FOR TESTING
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   // ____username function below
-    const [username, setUsername] = useState('');
-    const [repo, setRepo] = useState('');
+  // const [username, setUsername] = useState('');
+  // const [repo, setRepo] = useState('');
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -182,21 +191,13 @@ const Mvpmetrics = () => {
     const test = fetch(`https://api.github.com/users/${username}/repos`);
     console.log('test', test);
   };
-// for the handtyped field
+
+  // for the handtyped field
   const handleSubmitTyped = e => {
     e.preventDefault();
     console.log('owner', owner);
     console.log('repo goes here', repo);
-  };
-
-  // logic to get the name of the repo
-  const handleRepoChange = e => {
-    const selectedRepoUrl = e.target.value;
-    setSelectedRepo(selectedRepoUrl);
-    const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
-    // setSelectedRepo(repoName); //returns repo name to save, but wont display properly
-
-    setSelectedRepo(e.target.value); // returns repo url
+    fetchData();
   };
 
   return (
@@ -230,7 +231,7 @@ const Mvpmetrics = () => {
         <form onSubmit={handleSubmitTyped}>
           <input
             type='text'
-            placeholder='Enter Owner Username'
+            placeholder='Enter Owner'
             id='owner'
             value={owner}
             onChange={e => setOwner(e.target.value)}
@@ -260,6 +261,5 @@ const Mvpmetrics = () => {
     </>
   );
 };
-
 
 export default Mvpmetrics;

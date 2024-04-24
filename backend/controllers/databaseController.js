@@ -20,7 +20,7 @@ databaseController.registerUser = async (req, res, next) => {
     console.log(
       '  - User already has a profile in database, updating Access Token w/ Refresh Token',
     ); // CL*
-    console.log('grab the information here')
+    // console.log('grab the information here')
     const updatedProfile = await User.findOneAndUpdate(
       { username: username },
       { refresh_token: refreshToken },
