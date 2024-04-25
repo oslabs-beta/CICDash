@@ -150,8 +150,19 @@ html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 5px;
   /* Style */
-  background-color: white;
+  background-color: rgba(218, 215, 215, 0.651);
+  box-shadow: 0 4px 50px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown {
+  /* Content Position */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px;
+  /* Style */
+  background-color: rgba(240, 236, 236, 0.575);
   box-shadow: 0 4px 50px rgba(0, 0, 0, 0.2);
 }

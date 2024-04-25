@@ -602,7 +602,7 @@ const Mvpmetrics = () => {
 
   return (
     <>
-      <div className='searchBar'>
+      <div className='dropdown'>
         <label>Please enter your Username and select a public Repository</label>
         <form onSubmit={handleSubmit}>
           <input
@@ -631,12 +631,12 @@ const Mvpmetrics = () => {
         <form onSubmit={handleSubmitTyped}>
           <input
             type='text'
-            placeholder='Enter Owner'
+            placeholder='Enter Owner Name'
             id='owner'
             value={owner}
             onChange={e => setOwner(e.target.value)}
           />
-          <input
+          <input 
             type='text'
             placeholder='Enter Repository Name'
             id='repo'
