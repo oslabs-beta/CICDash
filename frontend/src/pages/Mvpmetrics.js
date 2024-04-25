@@ -94,7 +94,7 @@ const genChartData = arr => {
 };
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
-const chartData = {
+let chartData = {
   labels: [],
   success: [], //[1, 2, 3, ...]
   failure: [], //[5, 5, 5, ...]
@@ -178,8 +178,31 @@ const sortRuns = array => {
   });
 };
 
+const resetChartData = () => {
+  chartData = {
+    labels: [],
+    success: [], //[1, 2, 3, ...]
+    failure: [], //[5, 5, 5, ...]
+    pieData: [0, 0], //[12, 19] [Failure, Success]
+    horizBarData: [], //[-5, 12, -13, 4, -5, 6, -7] Month avg workflow run - Lifetime avg workflow run (seconds)
+    straightLine: [], //Lifetime average run line
+    monthAvg: [], //Monthly average
+    eachRunLabel: [], //"4/18 19:23"
+    eachRunDuration: [],
+    monthIso: [],
+  };
+};
+
+const resetShapedMetrics = () => {
+  shapedMetrics = {
+    lifetimeRuns: [],
+    monthData: [],
+    lifetimeAvg: null,
+  };
+};
+
 //New shape of metrics after parsing response of /api/github/findRuns
-const shapedMetrics = {
+let shapedMetrics = {
   lifetimeRuns: [],
   monthData: [],
   lifetimeAvg: null,
@@ -366,6 +389,13 @@ export const lineChartData = {
 };
 
 const Mvpmetrics = () => {
+  const [username, setUsername] = useState(''); //for username to populate dropdown options
+  const [repos, setRepos] = useState([]); //for dropdown menu options
+  const [selectedRepo, setSelectedRepo] = useState(''); //for selection from dropdown
+
+  const [owner, setOwner] = useState(''); //for type in field
+  const [repo, setRepo] = useState(''); //for type in field
+
   //Set state for charts
   const [vertBarChart, setVertBarChart] = useState({
     labels: chartData.monthIso,
@@ -410,122 +440,213 @@ const Mvpmetrics = () => {
   });
   const [comboBarChart, setComboBarChart] = useState(comboBarData);
   const [lineChart, setLineChart] = useState(lineChartData);
+
   useEffect(() => {
-    const fetchData = async () => {
-      console.log('Fetching runs from db ...');
-      try {
-        let findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
-          withCredentials: true,
-        });
-        console.log('findJobs:', findJobs.data[0].runs);
-        reformatData(sortRuns(findJobs.data[0].runs));
-        console.log('shapedMetrics:', shapedMetrics);
-        genChartData(shapedMetrics.monthData);
-        console.log('chartData: ', chartData);
-        //Load Chart JS data after fetch
-        setVertBarChart({
-          labels: chartData.labels,
-          datasets: [
-            {
-              label: 'Success',
-              data: chartData.success,
-              backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-            {
-              label: 'Failure',
-              data: chartData.failure,
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-          ],
-        });
-        setPieChart({
-          labels: ['Failure', 'Success'],
-          datasets: [
-            {
-              label: 'Lifetime Workflow Attempts',
-              data: chartData.pieData,
-              backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
-              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-              borderWidth: 1,
-            },
-          ],
-        });
-        const maxVal = Math.max.apply(null, chartData.horizBarData) + 10; //for use in centering horiz bar chart
-        setHorizBarOptions({
-          indexAxis: 'y',
-          elements: {
-            bar: {
-              borderWidth: 2,
-            },
+    if (username) {
+      fetch(`https://api.github.com/users/${username}/repos`)
+        .then(response => response.json())
+        .then(data => {
+          setRepos(
+            data.map(repo => ({
+              name: repo.name,
+              url: repo.html_url,
+            })),
+          );
+        })
+        .catch(error => console.error('Error fetching repositories:', error));
+    }
+  }, [username]);
+
+  // logic to get the name of the repo
+  const handleRepoChange = e => {
+    const selectedRepoUrl = e.target.value;
+    setSelectedRepo(selectedRepoUrl);
+    const repoName = selectedRepoUrl.split('/').pop(); // Get the last segment of the URL
+    // setSelectedRepo(repoName); //returns repo name to save, but wont display properly
+    setSelectedRepo(e.target.value); // returns repo url
+  };
+
+  async function fetchData() {
+    console.log('Fetching runs from db ...');
+    try {
+      let findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+        withCredentials: true,
+        params: {
+          owner: owner,
+          repo: repo,
+        },
+      });
+      // console.log('findJobs:', findJobs.data[0].runs);
+      console.log('findJobs:', findJobs);
+      resetShapedMetrics();
+      reformatData(sortRuns(findJobs.data[0].runs));
+      console.log('shapedMetrics:', shapedMetrics);
+      resetChartData();
+      genChartData(shapedMetrics.monthData);
+      console.log('chartData: ', chartData);
+      //Load Chart JS data after fetch
+      setVertBarChart({
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: 'Success',
+            data: chartData.success,
+            backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'right',
-            },
-            title: {
-              display: true,
-              text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
-            },
+          {
+            label: 'Failure',
+            data: chartData.failure,
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
           },
-          scales: {
-            x: {
-              min: -maxVal,
-              max: maxVal,
-            },
+        ],
+      });
+      setPieChart({
+        labels: ['Failure', 'Success'],
+        datasets: [
+          {
+            label: 'Lifetime Workflow Attempts',
+            data: chartData.pieData,
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
+            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
+            borderWidth: 1,
           },
-        });
-        setHorizBarChart({
-          labels: chartData.labels.reverse(),
-          datasets: [
-            {
-              label: '2024',
-              data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
-              borderColor: CHART_COLORS.red,
-              backgroundColor: CHART_COLORS.orange,
-            },
-          ],
-        });
-        setComboBarChart({
-          labels: chartData.labels,
-          datasets: [
-            {
-              label: 'Month',
-              data: chartData.monthAvg,
-              borderColor: CHART_COLORS.purple,
-              backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
-              order: 0,
-            },
-            {
-              label: 'Lifetime',
-              data: chartData.straightLine,
-              borderColor: CHART_COLORS.blue,
-              backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
-              type: 'line',
-              order: 1,
-            },
-          ],
-        });
-        setLineChart({
-          labels: chartData.eachRunLabel,
-          datasets: [
-            {
-              label: 'Run Times (seconds)',
-              data: chartData.eachRunDuration,
-              borderColor: CHART_COLORS.green,
-              backgroundColor: CHART_COLORS.green,
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+        ],
+      });
+      const maxVal = Math.max.apply(null, chartData.horizBarData) + 10; //for use in centering horiz bar chart
+      setHorizBarOptions({
+        indexAxis: 'y',
+        elements: {
+          bar: {
+            borderWidth: 2,
+          },
+        },
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+          },
+        },
+        scales: {
+          x: {
+            min: -maxVal,
+            max: maxVal,
+          },
+        },
+      });
+      setHorizBarChart({
+        labels: chartData.labels.reverse(),
+        datasets: [
+          {
+            label: '2024',
+            data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
+            borderColor: CHART_COLORS.red,
+            backgroundColor: CHART_COLORS.orange,
+          },
+        ],
+      });
+      setComboBarChart({
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: 'Month',
+            data: chartData.monthAvg,
+            borderColor: CHART_COLORS.purple,
+            backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
+            order: 0,
+          },
+          {
+            label: 'Lifetime',
+            data: chartData.straightLine,
+            borderColor: CHART_COLORS.blue,
+            backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+            type: 'line',
+            order: 1,
+          },
+        ],
+      });
+      setLineChart({
+        labels: chartData.eachRunLabel,
+        datasets: [
+          {
+            label: 'Run Times (seconds)',
+            data: chartData.eachRunDuration,
+            borderColor: CHART_COLORS.green,
+            backgroundColor: CHART_COLORS.green,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log('username', username);
+    console.log('repo goes here', repo);
+    const test = fetch(`https://api.github.com/users/${username}/repos`);
+    console.log('test', test);
+  };
+
+  // for the handtyped field
+  const handleSubmitTyped = e => {
+    e.preventDefault();
+    console.log('owner', owner);
+    console.log('repo goes here', repo);
     fetchData();
-  }, []);
+  };
 
   return (
     <>
+      <div className='searchBar'>
+        <label>Please enter your Username and select a public Repository</label>
+        <form onSubmit={handleSubmit}>
+          <input
+            type='text'
+            placeholder='Enter GitHub Username'
+            id='username'
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+          />
+          {repos.length > 0 && (
+            <select value={selectedRepo} onChange={handleRepoChange}>
+              <option value=''>Select a repository</option>
+              {repos.map(repo => (
+                <option key={repo.name} value={repo.url}>
+                  {repo.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button type='submit'>Submit</button>
+        </form>
+      </div>
+
+      <div className='searchBar'>
+        <label>Please enter your Owner and Repository</label>
+        <form onSubmit={handleSubmitTyped}>
+          <input
+            type='text'
+            placeholder='Enter Owner'
+            id='owner'
+            value={owner}
+            onChange={e => setOwner(e.target.value)}
+          />
+          <input
+            type='text'
+            placeholder='Enter Repository Name'
+            id='repo'
+            value={repo}
+            onChange={e => setRepo(e.target.value)}
+          />
+          <button type='submit'>Submit</button>
+        </form>
+      </div>
+
       <div className={'grid-container'}>
         <div className={'viz-a'}>
           <Bar options={options} data={vertBarChart} />

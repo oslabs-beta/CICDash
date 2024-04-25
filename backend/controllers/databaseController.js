@@ -10,7 +10,7 @@ databaseController.registerUser = async (req, res, next) => {
   const username = res.locals.apiResponseData.login;
   const accessToken = res.locals.authResponseData.access_token;
   const refreshToken = res.locals.authResponseData.refresh_token;
-  console.log('  - username pulled from res.locals: ', username);
+  console.log('  - username pulled from res.locals: ', username); //---This is the place username comes into play
   console.log('  - Access Token pulled from res.locals: ', accessToken);
   console.log('  - Refresh Token pulled from res.locals: ', refreshToken);
 
@@ -20,6 +20,7 @@ databaseController.registerUser = async (req, res, next) => {
     console.log(
       '  - User already has a profile in database, updating Access Token w/ Refresh Token',
     ); // CL*
+    // console.log('grab the information here')
     const updatedProfile = await User.findOneAndUpdate(
       { username: username },
       { refresh_token: refreshToken },
@@ -50,9 +51,9 @@ databaseController.getUniqueRunIds = async (req, res, next) => {
   console.log(`* Checking if run ids exist in database...`); // CL*
 
   // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake';
-  const repo = 'unit-12-testing-gha';
+  const { owner, repo } = req.query;
+  // const owner = 'ptri-13-cat-snake';
+  // const repo = 'unit-12-testing-gha';
   const { allRunIds } = res.locals;
 
   try {
@@ -96,9 +97,9 @@ databaseController.saveJobs = async (req, res, next) => {
     console.log('* Saving all the jobs data associated w/ each workflow run to mongodb...'); // CL*
 
     // Grab owner and repo from the request
-    // const { owner, repo } = req.body;
-    const owner = 'ptri-13-cat-snake'; // HARDCODE
-    const repo = 'unit-12-testing-gha'; // HARDCODE
+    const { owner, repo } = req.query;
+    // const owner = 'ptri-13-cat-snake'; // HARDCODE
+    // const repo = 'unit-12-testing-gha'; // HARDCODE
     console.log('  - Owner pulled from request object: ', owner);
     console.log('  - Repo pulled from request object: ', repo);
 
@@ -205,20 +206,40 @@ databaseController.saveJobs = async (req, res, next) => {
 };
 
 databaseController.findRuns = async (req, res, next) => {
-  console.log(`* Checking existing runs in database...`); // CL*
+  console.log(`* Fetching existing runs in database...`); // CL*
   try {
+    const { owner, repo } = req.query;
     // Query the database to check if the username has a runs entry with any of the run IDs
-    const existingRuns = await User.find({ username: req.cookies.username });
-    console.log('existingRuns: ', existingRuns);
+    const existingRuns = await User.find({
+      username: req.cookies.username,
+      runs: {
+        $elemMatch: {
+          repo_owner: owner,
+          repo: repo,
+        },
+      },
+    });
+    console.log(` - Sent existing runs to frontend.`);
+    console.log(`existingRuns:${existingRuns}`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
-
     return next();
   } catch (error) {
     console.error('Error finding runs:', error);
   }
 };
-
+//
+databaseController.saveFrontendData = async (req, res, next) => {
+  console.log(`* saveFrontendData...`); // CL*
+  try {
+    console.log('view this: ', req.body);
+    const { username, repo } = req.body; // Retrieve data from request body
+    res.locals.userAndRepo = { username, repo }; // Store data in res.locals
+    return next();
+  } catch (error) {
+    console.error('Error saving username or repo:', error);
+  }
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = databaseController;
