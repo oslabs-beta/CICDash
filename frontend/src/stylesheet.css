@@ -234,3 +234,14 @@ html {
   max-height: 50vh;
   place-items: center;
 }
+
+.searchBar {
+  /* Content Position */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  /* Style */
+  background-color: white;
+  box-shadow: 0 4px 50px rgba(0, 0, 0, 0.2);
+}

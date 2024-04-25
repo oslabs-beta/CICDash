@@ -44,7 +44,8 @@ githubController.auth = async (req, res, next) => {
   // Pass on the user data sent back by Github (ie Username)
   res.locals.apiResponseData = apiResponse.data;
   console.log('  - User data sent back by Github:', apiResponse.data); // CL*
-
+  console.log('  - User data sent back by Github username hopefully:', apiResponse.data.login); // CL*
+  res.locals.loginUsername = apiResponse.data.login;
   return next();
 };
 
@@ -55,9 +56,9 @@ githubController.getRunIds = async (req, res, next) => {
   console.log(`* Getting all user's workflow runs id's...`); // CL*
 
   // Grab owner and repo from the request
-  // const { owner, repo } = req.body;
-  const owner = 'ptri-13-cat-snake'; // HARDCODE
-  const repo = 'unit-12-testing-gha'; // HARDCODE
+  const { owner, repo } = req.query;
+  // const owner = 'ptri-13-cat-snake'; // HARDCODE
+  // const repo = 'unit-12-testing-gha'; // HARDCODE
   console.log('  - Owner pulled from request object: ', owner);
   console.log('  - Repo pulled from request object: ', repo);
 
@@ -107,9 +108,9 @@ githubController.getJobs = async (req, res, next) => {
     console.log(`* Getting all the jobs data associated w/ each workflow run...`); // CL*
 
     // Grab owner and repo from the request
-    // const { owner, repo } = req.body;
-    const owner = 'ptri-13-cat-snake'; // HARDCODE
-    const repo = 'unit-12-testing-gha'; // HARDCODE
+    const { owner, repo } = req.query;
+    // const owner = 'ptri-13-cat-snake'; // HARDCODE
+    // const repo = 'unit-12-testing-gha'; // HARDCODE
     console.log('  - Owner pulled from request object: ', owner);
     console.log('  - Repo pulled from request object: ', repo);
 
@@ -146,6 +147,50 @@ githubController.getJobs = async (req, res, next) => {
       next(error);
     }
   }
+};
+
+// Test frontend code below
+githubController.install = async (req, res, next) => {
+  console.log('* This is where we want to look right now');
+
+  // Grab Authorization Code provided by GitHub after the user logs in w/ GitHub
+
+  // Pass on the authentication data sent back by Github (ie Access Token, Refresh Token)
+  // console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
+
+  // Grab Access Token from authentication data sent back by Github
+  // console.log('  - Access token:', accessToken); // CL*
+
+  // GET request to Github api for user data using Access Token
+  // const installResponse = await axios({
+  //   method: 'get',
+  //   url: `https://api.github.com/installation/repositories`,
+  //   headers: {
+  //     Authorization: 'token ' + res.locals.authResponseData.accessToken,
+  //     Accept: 'application/vnd.github.v3+json',
+  //   },
+  // });
+
+  axios
+    .get('https://api.github.com/installation/repos', {
+      headers: {
+        Authorization: 'token ' + res.locals.authResponseData.accessToken,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching repositories:', error);
+    });
+
+  // Pass on the user data sent back by Github (ie Username)
+  // res.locals.apiResponseData = apiResponse.data;
+  // console.log('  - installResponse by Github:', installResponse); // CL*
+  // console.log('  - User data sent back by Github username hopefully:', installResponse); // CL*
+  // res.locals.loginUsername = apiResponse.data.login;
+  return next();
 };
 
 module.exports = githubController;

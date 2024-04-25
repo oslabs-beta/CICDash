@@ -21,6 +21,7 @@ console.log(
 // Route files
 const authRoutes = require('./routes/authRoutes.js');
 const githubRoutes = require('./routes/githubRoutes.js');
+// const userRoutes = require('./routes/userRoutes.js');
 
 // Handle parsing the JSON body of every req and parsing the cookies of every req
 app.use(cors());
@@ -44,6 +45,7 @@ mongoose
 // Route handlers
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
+// app.use('/results',userRoutes); //check userRoutes and databaseController.saveFrontendData,
 
 // Global error handler
 app.use((err, req, res, next) => {
