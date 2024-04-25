@@ -75,6 +75,49 @@ const reformatData = array => {
   shapedMetrics.monthData = monthDataArr;
   shapedMetrics.lifetimeAvg = calcAvg(shapedMetrics.lifetimeRuns);
 };
+
+const reformatSteps = array => {
+  const stepDataArr = [];
+
+  array.forEach(run => {
+    run.steps.forEach(step => {
+      // Try to find if this step already exists in the array
+      let existingStep = stepDataArr.find(el => el.name === step.name);
+
+      if (!existingStep) {
+        // Create a new step object if it doesn't exist
+        existingStep = {
+          name: step.name,
+          total: 0,
+          fail: 0,
+        };
+        stepDataArr.push(existingStep);
+      }
+
+      // Increment the total number of times this step has been run
+      existingStep.total++;
+
+      // Increment the fail count if the conclusion is not success
+      if (step.conclusion !== 'success') {
+        existingStep.fail++;
+      }
+    });
+  });
+
+  // Update the global stepMetrics array with new data
+  stepMetrics = stepDataArr;
+};
+
+//New shape of metrics after parsing response of /api/github/findRuns
+let shapedMetrics = {
+  lifetimeRuns: [],
+  monthData: [],
+  lifetimeAvg: null,
+};
+
+//For step calculations
+let stepMetrics = [];
+
 //Reads shapedMetrics for conversion to chartData for ChartJS display
 const genChartData = arr => {
   arr.forEach(el => {
@@ -92,6 +135,14 @@ const genChartData = arr => {
   // horizBarOptions.scales.x.min = -test1;
   // horizBarOptions.scales.x.min = test1;
 };
+
+//Reads stepMetrics for conversion to chartData for ChartJS display
+const genChartStepData = arr => {
+  arr.forEach(el => {
+    chartData.stepLabels.push(el.name);
+    chartData.stepFailPct.push(el.fail / el.total);
+  });
+};
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
 let chartData = {
@@ -105,6 +156,8 @@ let chartData = {
   eachRunLabel: [], //"4/18 19:23"
   eachRunDuration: [],
   monthIso: [],
+  stepLabels: [],
+  stepFailPct: [],
 };
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -190,6 +243,8 @@ const resetChartData = () => {
     eachRunLabel: [], //"4/18 19:23"
     eachRunDuration: [],
     monthIso: [],
+    stepLabels: [],
+    stepFailPct: [],
   };
 };
 
@@ -199,13 +254,6 @@ const resetShapedMetrics = () => {
     monthData: [],
     lifetimeAvg: null,
   };
-};
-
-//New shape of metrics after parsing response of /api/github/findRuns
-let shapedMetrics = {
-  lifetimeRuns: [],
-  monthData: [],
-  lifetimeAvg: null,
 };
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -387,6 +435,45 @@ export const lineChartData = {
     },
   ],
 };
+//Step Bar Chart
+export const stepBarOptions = {
+  indexAxis: 'y',
+  elements: {
+    bar: {
+      borderWidth: 2,
+    },
+  },
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'right',
+    },
+    title: {
+      display: true,
+      text: 'Failure Rate By Job Step',
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        format: {
+          style: 'percent',
+        },
+      },
+    },
+  },
+};
+export const stepBarData = {
+  labels: chartData.stepLabels,
+  datasets: [
+    {
+      label: '2024',
+      data: chartData.stepFailPct,
+      borderColor: 'rgb(255, 99, 132)',
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+  ],
+};
 
 const Mvpmetrics = () => {
   const [username, setUsername] = useState(''); //for username to populate dropdown options
@@ -438,8 +525,28 @@ const Mvpmetrics = () => {
       },
     },
   });
-  const [comboBarChart, setComboBarChart] = useState(comboBarData);
+  const [comboBarChart, setComboBarChart] = useState({
+    labels: chartData.labels,
+    datasets: [
+      {
+        label: 'Month',
+        data: chartData.monthAvg,
+        borderColor: CHART_COLORS.purple,
+        backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
+        order: 0,
+      },
+      {
+        label: 'Lifetime',
+        data: chartData.straightLine,
+        borderColor: CHART_COLORS.blue,
+        backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+        type: 'line',
+        order: 1,
+      },
+    ],
+  });
   const [lineChart, setLineChart] = useState(lineChartData);
+  const [stepChart, setStepChart] = useState(stepBarData);
 
   useEffect(() => {
     if (username) {
@@ -477,12 +584,15 @@ const Mvpmetrics = () => {
         },
       });
       // console.log('findJobs:', findJobs.data[0].runs);
-      console.log('findJobs:', findJobs);
+      console.log('findJobs:', findJobs.data[0].runs);
       resetShapedMetrics();
-      reformatData(sortRuns(findJobs.data[0].runs));
-      console.log('shapedMetrics:', shapedMetrics);
       resetChartData();
+      reformatData(sortRuns(findJobs.data[0].runs));
+      reformatSteps(findJobs.data[0].runs);
+      console.log('stepMetrics:', stepMetrics);
+      console.log('shapedMetrics:', shapedMetrics);
       genChartData(shapedMetrics.monthData);
+      genChartStepData(stepMetrics);
       console.log('chartData: ', chartData);
       //Load Chart JS data after fetch
       setVertBarChart({
@@ -579,6 +689,17 @@ const Mvpmetrics = () => {
           },
         ],
       });
+      setStepChart({
+        labels: chartData.stepLabels,
+        datasets: [
+          {
+            label: '2024',
+            data: chartData.stepFailPct,
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -662,6 +783,9 @@ const Mvpmetrics = () => {
         </div>
         <div>
           <Line options={lineOptions} data={lineChart} />;
+        </div>
+        <div>
+          <Bar options={stepBarOptions} data={stepChart} />
         </div>
       </div>
     </>
