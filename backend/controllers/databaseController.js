@@ -212,10 +212,15 @@ databaseController.findRuns = async (req, res, next) => {
     // Query the database to check if the username has a runs entry with any of the run IDs
     const existingRuns = await User.find({
       username: req.cookies.username,
-      owner: owner,
-      repo: repo,
+      runs: {
+        $elemMatch: {
+          repo_owner: owner,
+          repo: repo,
+        },
+      },
     });
     console.log(` - Sent existing runs to frontend.`);
+    console.log(`existingRuns:${existingRuns}`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
     return next();
@@ -223,11 +228,11 @@ databaseController.findRuns = async (req, res, next) => {
     console.error('Error finding runs:', error);
   }
 };
-// 
+//
 databaseController.saveFrontendData = async (req, res, next) => {
   console.log(`* saveFrontendData...`); // CL*
   try {
-    console.log('view this: ', req.body)
+    console.log('view this: ', req.body);
     const { username, repo } = req.body; // Retrieve data from request body
     res.locals.userAndRepo = { username, repo }; // Store data in res.locals
     return next();

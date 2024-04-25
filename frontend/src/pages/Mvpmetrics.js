@@ -94,7 +94,7 @@ const genChartData = arr => {
 };
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
-const chartData = {
+let chartData = {
   labels: [],
   success: [], //[1, 2, 3, ...]
   failure: [], //[5, 5, 5, ...]
@@ -178,8 +178,31 @@ const sortRuns = array => {
   });
 };
 
+const resetChartData = () => {
+  chartData = {
+    labels: [],
+    success: [], //[1, 2, 3, ...]
+    failure: [], //[5, 5, 5, ...]
+    pieData: [0, 0], //[12, 19] [Failure, Success]
+    horizBarData: [], //[-5, 12, -13, 4, -5, 6, -7] Month avg workflow run - Lifetime avg workflow run (seconds)
+    straightLine: [], //Lifetime average run line
+    monthAvg: [], //Monthly average
+    eachRunLabel: [], //"4/18 19:23"
+    eachRunDuration: [],
+    monthIso: [],
+  };
+};
+
+const resetShapedMetrics = () => {
+  shapedMetrics = {
+    lifetimeRuns: [],
+    monthData: [],
+    lifetimeAvg: null,
+  };
+};
+
 //New shape of metrics after parsing response of /api/github/findRuns
-const shapedMetrics = {
+let shapedMetrics = {
   lifetimeRuns: [],
   monthData: [],
   lifetimeAvg: null,
@@ -453,9 +476,12 @@ const Mvpmetrics = () => {
           repo: repo,
         },
       });
-      console.log('findJobs:', findJobs.data[0].runs);
+      // console.log('findJobs:', findJobs.data[0].runs);
+      console.log('findJobs:', findJobs);
+      resetShapedMetrics();
       reformatData(sortRuns(findJobs.data[0].runs));
       console.log('shapedMetrics:', shapedMetrics);
+      resetChartData();
       genChartData(shapedMetrics.monthData);
       console.log('chartData: ', chartData);
       //Load Chart JS data after fetch
@@ -556,23 +582,23 @@ const Mvpmetrics = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
-  
-const handleSubmit = e => {
-  e.preventDefault();
-  console.log('username', username);
-  console.log('repo goes here', repo);
-  const test = fetch(`https://api.github.com/users/${username}/repos`);
-  console.log('test', test);
-};
+  }
 
-// for the handtyped field
-const handleSubmitTyped = e => {
-  e.preventDefault();
-  console.log('owner', owner);
-  console.log('repo goes here', repo);
-  fetchData();
-};
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log('username', username);
+    console.log('repo goes here', repo);
+    const test = fetch(`https://api.github.com/users/${username}/repos`);
+    console.log('test', test);
+  };
+
+  // for the handtyped field
+  const handleSubmitTyped = e => {
+    e.preventDefault();
+    console.log('owner', owner);
+    console.log('repo goes here', repo);
+    fetchData();
+  };
 
   return (
     <>
@@ -641,9 +667,5 @@ const handleSubmitTyped = e => {
     </>
   );
 };
-
-
-
-
 
 export default Mvpmetrics;
