@@ -90,6 +90,7 @@ const reformatSteps = array => {
           name: step.name,
           total: 0,
           fail: 0,
+          success: 0,
         };
         stepDataArr.push(existingStep);
       }
@@ -100,6 +101,8 @@ const reformatSteps = array => {
       // Increment the fail count if the conclusion is not success
       if (step.conclusion !== 'success') {
         existingStep.fail++;
+      } else if (step.conclusion === 'success') {
+        existingStep.success++;
       }
     });
   });
@@ -141,6 +144,7 @@ const genChartStepData = arr => {
   arr.forEach(el => {
     chartData.stepLabels.push(el.name);
     chartData.stepFailPct.push(el.fail / el.total);
+    chartData.stepSuccPct.push(el.success / el.total);
   });
 };
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -158,6 +162,7 @@ let chartData = {
   monthIso: [],
   stepLabels: [],
   stepFailPct: [],
+  stepSuccPct: [],
 };
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -245,6 +250,7 @@ const resetChartData = () => {
     monthIso: [],
     stepLabels: [],
     stepFailPct: [],
+    stepSuccPct: [],
   };
 };
 
@@ -455,10 +461,21 @@ export const stepBarOptions = {
   },
   scales: {
     x: {
+      stacked: true,
       ticks: {
         format: {
           style: 'percent',
         },
+        display: true,
+      },
+      grid: {
+        display: false,
+      },
+    },
+    y: {
+      stacked: true,
+      grid: {
+        display: false,
       },
     },
   },
@@ -467,10 +484,16 @@ export const stepBarData = {
   labels: chartData.stepLabels,
   datasets: [
     {
-      label: '2024',
+      label: 'Fails',
       data: chartData.stepFailPct,
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+    {
+      label: 'Success',
+      data: chartData.stepSuccPct,
+      borderColor: 'rgb(75, 192, 192)',
+      backgroundColor: 'rgba(75, 192, 192, 0.5)',
     },
   ],
 };
@@ -693,10 +716,16 @@ const Mvpmetrics = () => {
         labels: chartData.stepLabels,
         datasets: [
           {
-            label: '2024',
+            label: 'Fails',
             data: chartData.stepFailPct,
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          },
+          {
+            label: 'Success',
+            data: chartData.stepSuccPct,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
           },
         ],
       });
