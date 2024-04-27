@@ -44,27 +44,81 @@ html {
 }
 
 /* -------------------------------------------------- */
-/* HOME CONTENT */
-.Home-content {
+/* HOME PAGE SECTIONS */
+/* LOGIN SECTION */
+.Home-login {
   /* Content Position */
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: calc(100vh - 100px); /* Adjust for scrolling on page */
+  min-height: 100vh;
+}
+
+.Home-login-core-tech {
+  margin-top: 450px;
+  /* Content Position */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Home-login-core-tech-body {
+  /* Content Position */
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* ABOUT SECTION */
+.Home-about {
+  /* Content Position */
+  display: flex;
+  align-items: center;
+  /* Size */
+  height: 550px;
+  /* Style */
+  background-color: #f6f6f6;
+}
+
+.Home-about-left,
+.Home-about-right {
+  margin-left: 100px;
+  /* margin: 20px; Adjust margin as needed */
+}
+
+/* Optional: Adjust width of left and right sections */
+.Home-about-left {
+  flex: 1;
+}
+
+.Home-about-right {
+  flex: 1;
+}
+
+/* CONTACT SECTION */
+.Home-contact {
+  /* Content Position */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Size */
+  height: 550px;
+  /* Style */
+  background-color: #00bf63;
 }
 
 /* -------------------------------------------------- */
 /* TEXT */
-.Home-content h2 {
+.Home-login h2 {
   /* Size */
   font-size: 54px;
   /* Position */
   margin-top: 120px;
   /* Style */
-  font-weight: 100;
+  font-weight: bold;
 }
 
-.Home-content h3 {
+.Home-login h3 {
   /* Size */
   font-size: 26px;
   /* Positon */
@@ -74,14 +128,77 @@ html {
   color: gray;
 }
 
+.Home-login-core-tech-text {
+  /* Size */
+  font-size: 40px !important;
+}
+
+.Home-about h2 {
+  /* Size */
+  font-size: 40px;
+  /* Position */
+  margin-top: 100px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  font-weight: bold;
+}
+
+.Home-about h3 {
+  /* Size */
+  font-size: 26px;
+  /* Positon */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: white;
+}
+
+.Home-contact h2 {
+  /* Size */
+  font-size: 54px;
+  /* Position */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: white;
+}
+
+.Home-contact h3 {
+  /* Size */
+  font-size: 26px;
+  /* Positon */
+  margin-top: 20px;
+  z-index: 1;
+  /* Style */
+  font-weight: 100;
+  color: gold;
+}
+
+/* -------------------------------------------------- */
+/* TEAM MEMBERS */
+.team-members {
+  /* Content Position */
+  display: flex;
+  align-items: center;
+  padding: 30px;
+}
+
+.member {
+  padding: 50px;
+  margin-right: 10px;
+  /* background-color: red; */
+  background-image: 'frontend/assets/john_doe.jpg';
+}
+
 /* -------------------------------------------------- */
 /* GH LOGIN BUTTON */
 .gh-login-button {
   /* Position */
   margin-top: 30px;
   /* Content Position */
-  display: flex;
-  align-items: center;
   padding: 10px;
   /* Style */
   background-image: linear-gradient(to right, #00bf63, #05a78b);
@@ -102,14 +219,71 @@ html {
 }
 
 /* -------------------------------------------------- */
-/* METRICS GIF */
+/* GIFS */
 .metrics-gif {
   /* Size */
-  width: 1000px;
+  width: 80vw;
   /* Position */
   position: absolute;
   z-index: -1;
+  margin-top: -30px;
+}
+
+.green-viz-gif {
+  /* Size */
+  width: 100vw;
+  height: 83vh;
+  /* Position */
+  position: absolute;
+}
+
+/* -------------------------------------------------- */
+/* IMAGES */
+.gha-logo {
+  /* Size */
+  width: 135px;
+  height: 100px;
+  /* Position */
+  margin-right: 100px;
+  margin-bottom: 100px;
   margin-top: 30px;
+}
+
+.plus {
+  /* Size */
+  font-size: 40px;
+  /* Position */
+  margin-right: 100px;
+  margin-bottom: 100px;
+  margin-top: 30px;
+}
+
+.chartjs-logo {
+  /* Size */
+  width: 80px;
+  height: 100px;
+  /* Position */
+  margin-right: 100px;
+  margin-top: 30px;
+  margin-bottom: 100px;
+}
+
+.equal {
+  /* Size */
+  font-size: 40px;
+  /* Position */
+  margin-right: 100px;
+  margin-bottom: 100px;
+  margin-top: 30px;
+}
+
+.cicdeez-logo-v {
+  /* Size */
+  width: 100px;
+  height: 100px;
+  /* Position */
+  margin-top: 30px;
+  margin-bottom: 100px;
 }
 
 /* -------------------------------------------------- */
