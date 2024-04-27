@@ -1,3 +1,11 @@
+.gradient-hover:hover {
+  background-image: linear-gradient(
+    to right,
+    #01937b,
+    #00bf63
+  ); /* Change gradient direction on hover */
+}
+
 body,
 html {
   margin: 0;
@@ -201,7 +209,7 @@ html {
   /* Content Position */
   padding: 10px;
   /* Style */
-  background-image: linear-gradient(to right, #00bf63, #05a78b);
+  background-image: linear-gradient(to right, #00bf63, #01937b);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
   font-size: 14pt;
   color: white;

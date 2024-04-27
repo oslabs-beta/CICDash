@@ -1,10 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
+// Bootstrap Styling/Page Layout
 import { Container, Row, Col, Button, Navbar } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Scroll to specific section functionality
+import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
+
+// Components
 import Footer from './Footer';
+
+// Assets
 import logo from '/frontend/assets/cicdeez_logo_h.png';
 import metricsDummy from '/frontend/assets/metrics_dummy.gif';
+import technologies from '/frontend/assets/technologies.png';
 
 const Home = () => {
   return (
@@ -12,50 +22,79 @@ const Home = () => {
       <Navbar bg='light' expand='lg' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
-            <img src={logo} height='30' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
+          <Navbar.Collapse id='basic-navbar-nav' style={{ marginLeft: '55vw' }}>
             <ul className='navbar-nav ml-auto'>
+              {/* Use HashLink to scroll to specific section */}
               <li className='nav-item'>
-                <a className='nav-link' href='#'>
+                <NavLink smooth to='#main' className='nav-link'>
                   Home
-                </a>
+                </NavLink>
               </li>
               <li className='nav-item'>
-                <a className='nav-link' href='#'>
+                <NavLink smooth to='#about' className='nav-link'>
                   About
-                </a>
+                </NavLink>
               </li>
               <li className='nav-item'>
-                <a className='nav-link' href='#'>
+                <NavLink smooth to='#contact' className='nav-link'>
                   Contact
-                </a>
+                </NavLink>
               </li>
             </ul>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Container className='text-center' style={{ marginTop: '150px', marginBottom: '50px' }}>
+      <Container
+        id='main'
+        className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
+        style={{ paddingTop: '130px', paddingBottom: '650px' }}
+      >
+        <img
+          src={metricsDummy}
+          alt='Metrics GIF'
+          className='img-fluid position-absolute top-1 start-1'
+          style={{ zIndex: '-1', maxHeight: '70%', maxWidth: '70%', marginTop: '750px' }}
+        />
+
         <h1 style={{ fontWeight: 'bold', fontSize: '50px' }}>
           Metrics Visualization for GitHub Actions
         </h1>
-        <p style={{ marginTop: '30px', fontSize: '26px' }}>
+
+        <p style={{ marginTop: '20px', fontSize: '26px' }}>
           Gain actionable insights on any workflow, any job, any step, from anytime.
         </p>
+
         <Link to='https://github.com/login/oauth/authorize?client_id=Iv1.cdabdacb14c5030c'>
           <Button
             variant='primary'
             size='lg'
-            style={{ backgroundColor: '#00BF63', border: 'none', marginTop: '30px' }}
+            style={{
+              backgroundImage: 'linear-gradient(to right, #00bf63, #01937b)',
+              border: 'none',
+              marginTop: '10px',
+              transition: 'background-image 0.3s ease', // Add transition property
+              cursor: 'pointer', // Change cursor on hover
+            }}
+            className='gradient-hover'
           >
-            Get Started
+            Log In with GitHub
           </Button>
         </Link>
       </Container>
 
-      <div className='py-5' style={{ backgroundColor: '#00BF63' }}>
+      <Container
+        id='technologies'
+        className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
+        style={{ paddingTop: '30px', paddingBottom: '80px' }}
+      >
+        <img src={technologies} alt='Technologies' style={{ width: '45vw' }} />
+      </Container>
+
+      <div id='about' className='py-5' style={{ backgroundColor: '#00BF63' }}>
         <Container>
           <Row className='align-items-center'>
             <Col xs={12} md={6} className='order-md-2'>
@@ -69,29 +108,16 @@ const Home = () => {
         </Container>
       </div>
 
-      <div className='bg-light py-5'>
+      {/* Add your Contact section here with id="contact" */}
+      <div id='contact' className='bg-light py-5'>
         <Container>
           <Row className='align-items-center'>
             <Col xs={12} md={6}>
               <img src={metricsDummy} className='img-fluid' alt='Metrics Dummy' />
             </Col>
             <Col xs={12} md={6}>
-              <h2>About</h2>
-              <p>Write your about text here.</p>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-
-      <div className='py-5' style={{ backgroundColor: '#00BF63' }}>
-        <Container>
-          <Row className='align-items-center'>
-            <Col xs={12} md={6} className='order-md-2'>
-              <img src={metricsDummy} className='img-fluid' alt='Metrics Dummy' />
-            </Col>
-            <Col xs={12} md={6} className='order-md-1'>
-              <h2>About</h2>
-              <p>Write your about text here.</p>
+              <h2>Contact</h2>
+              <p>Write your contact information here.</p>
             </Col>
           </Row>
         </Container>
@@ -101,6 +127,105 @@ const Home = () => {
     </>
   );
 };
+
+// import React from 'react';
+// import { Link } from 'react-router-dom';
+// import { Container, Row, Col, Button, Navbar } from 'react-bootstrap';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import Footer from './Footer';
+// import logo from '/frontend/assets/cicdeez_logo_h.png';
+// import metricsDummy from '/frontend/assets/metrics_dummy.gif';
+
+// const Home = () => {
+//   return (
+//     <>
+//       <Navbar bg='light' expand='lg' fixed='top'>
+//         <Container>
+//           <Navbar.Brand href='/'>
+//             <img src={logo} height='30' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+//           </Navbar.Brand>
+//           <Navbar.Toggle aria-controls='basic-navbar-nav' />
+//           <Navbar.Collapse id='basic-navbar-nav' style={{ marginLeft: '60vw' }}>
+//             <ul className='navbar-nav ml-auto'>
+//               <li className='nav-item'>
+//                 <a className='nav-link' href='#'>
+//                   About
+//                 </a>
+//               </li>
+//               <li className='nav-item'>
+//                 <a className='nav-link' href='#'>
+//                   Contact
+//                 </a>
+//               </li>
+//             </ul>
+//           </Navbar.Collapse>
+//         </Container>
+//       </Navbar>
+
+//       <Container className='text-center' style={{ marginTop: '150px', marginBottom: '50px' }}>
+//         <h1 style={{ fontWeight: 'bold', fontSize: '50px' }}>
+//           Metrics Visualization for GitHub Actions
+//         </h1>
+//         <p style={{ marginTop: '30px', fontSize: '26px' }}>
+//           Gain actionable insights on any workflow, any job, any step, from anytime.
+//         </p>
+//         <Link to='https://github.com/login/oauth/authorize?client_id=Iv1.cdabdacb14c5030c'>
+//           <Button
+//             variant='primary'
+//             size='lg'
+//             style={{ backgroundColor: '#00BF63', border: 'none', marginTop: '30px' }}
+//           >
+//             Get Started
+//           </Button>
+//         </Link>
+//       </Container>
+
+//       <div className='py-5' style={{ backgroundColor: '#00BF63' }}>
+//         <Container>
+//           <Row className='align-items-center'>
+//             <Col xs={12} md={6} className='order-md-2'>
+//               <img src={metricsDummy} className='img-fluid' alt='Metrics Dummy' />
+//             </Col>
+//             <Col xs={12} md={6} className='order-md-1'>
+//               <h2>About</h2>
+//               <p>Write your about text here.</p>
+//             </Col>
+//           </Row>
+//         </Container>
+//       </div>
+
+//       <div className='bg-light py-5'>
+//         <Container>
+//           <Row className='align-items-center'>
+//             <Col xs={12} md={6}>
+//               <img src={metricsDummy} className='img-fluid' alt='Metrics Dummy' />
+//             </Col>
+//             <Col xs={12} md={6}>
+//               <h2>About</h2>
+//               <p>Write your about text here.</p>
+//             </Col>
+//           </Row>
+//         </Container>
+//       </div>
+
+//       <div className='py-5' style={{ backgroundColor: '#00BF63' }}>
+//         <Container>
+//           <Row className='align-items-center'>
+//             <Col xs={12} md={6} className='order-md-2'>
+//               <img src={metricsDummy} className='img-fluid' alt='Metrics Dummy' />
+//             </Col>
+//             <Col xs={12} md={6} className='order-md-1'>
+//               <h2>About</h2>
+//               <p>Write your about text here.</p>
+//             </Col>
+//           </Row>
+//         </Container>
+//       </div>
+
+//       <Footer />
+//     </>
+//   );
+// };
 
 // import React from 'react';
 // import { Link } from 'react-router-dom';
