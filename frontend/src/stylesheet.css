@@ -222,11 +222,11 @@ html {
 /* GIFS */
 .metrics-gif {
   /* Size */
-  width: 1000px;
+  width: 80vw;
   /* Position */
   position: absolute;
   z-index: -1;
-  margin-top: 30px;
+  margin-top: -30px;
 }
 
 .green-viz-gif {
