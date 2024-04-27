@@ -44,13 +44,15 @@ const Home = () => {
         <p style={{ marginTop: '30px', fontSize: '26px' }}>
           Gain actionable insights on any workflow, any job, any step, from anytime.
         </p>
-        <Button
-          variant='primary'
-          size='lg'
-          style={{ backgroundColor: '#00BF63', border: 'none', marginTop: '30px' }}
-        >
-          Get Started
-        </Button>
+        <Link to='https://github.com/login/oauth/authorize?client_id=Iv1.cdabdacb14c5030c'>
+          <Button
+            variant='primary'
+            size='lg'
+            style={{ backgroundColor: '#00BF63', border: 'none', marginTop: '30px' }}
+          >
+            Get Started
+          </Button>
+        </Link>
       </Container>
 
       <div className='py-5' style={{ backgroundColor: '#00BF63' }}>
