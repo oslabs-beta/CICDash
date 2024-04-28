@@ -220,7 +220,7 @@ databaseController.findRuns = async (req, res, next) => {
       },
     });
     console.log(` - Sent existing runs to frontend.`);
-    console.log(`existingRuns:${existingRuns}`);
+    // console.log(`existingRuns:${existingRuns}`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
     return next();
