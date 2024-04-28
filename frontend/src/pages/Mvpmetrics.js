@@ -343,9 +343,10 @@ export const pieData = {
     {
       label: 'Lifetime Workflow Attempts',
       data: chartData.pieData,
-      backgroundColor: [CHART_COLORS.success, CHART_COLORS.fail],
-      // borderColor: [CHART_COLORS.black, CHART_COLORS.black],
-      // borderWidth: 0,
+      backgroundColor: [
+        transparentize(CHART_COLORS.success, 0.5),
+        transparentize(CHART_COLORS.fail, 0.5),
+      ],
     },
   ],
 };
@@ -381,8 +382,8 @@ export const horizBarData = {
     {
       label: '2024',
       data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
-      borderColor: CHART_COLORS.blue,
-      backgroundColor: CHART_COLORS.blue,
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
     },
   ],
 };
@@ -416,15 +417,15 @@ export const comboBarData = {
     {
       label: 'Month',
       data: chartData.monthAvg,
-      borderColor: CHART_COLORS.blue,
-      backgroundColor: transparentize(CHART_COLORS.blue, 0.35),
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
       order: 0,
     },
     {
       label: 'Lifetime',
       data: chartData.straightLine,
-      borderColor: CHART_COLORS.blue,
-      backgroundColor: CHART_COLORS.blue,
+      borderColor: transparentize(CHART_COLORS.red, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.red, 0.5),
       type: 'line',
       order: 1,
     },
@@ -454,8 +455,8 @@ export const lineChartData = {
     {
       label: 'Run Times',
       data: chartData.eachRunDuration,
-      borderColor: CHART_COLORS.green,
-      backgroundColor: CHART_COLORS.green,
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
     },
   ],
 };
@@ -504,14 +505,14 @@ export const stepBarData = {
     {
       label: 'Fails',
       data: chartData.stepFailPct,
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      borderColor: transparentize(CHART_COLORS.fail, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
     },
     {
       label: 'Success',
       data: chartData.stepSuccPct,
-      borderColor: 'rgb(75, 192, 192)',
-      backgroundColor: 'rgba(75, 192, 192, 0.5)',
+      borderColor: transparentize(CHART_COLORS.success, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.success, 0.5),
     },
   ],
 };
