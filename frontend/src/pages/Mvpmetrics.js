@@ -287,6 +287,12 @@ export const options = {
       return delay;
     },
   },
+  datasets: {
+    bar: {
+      barPercentage: 0.75,
+      categoryPercentage: 0.75,
+    },
+  },
 };
 export function transparentize(value, opacity) {
   var alpha = opacity === undefined ? 0.5 : 1 - opacity;
@@ -396,12 +402,12 @@ export const comboBarOptions = {
         text: 'Monthly vs Lifetime Average (seconds)',
       },
     },
-    // scales: {
-    //   x: {
-    //     min: "February '24",
-    //     max: "April '24",
-    //   },
-    // },
+  },
+  datasets: {
+    bar: {
+      barPercentage: 0.5,
+      categoryPercentage: 0.75,
+    },
   },
 };
 export const comboBarData = {
@@ -523,12 +529,12 @@ const Mvpmetrics = () => {
       {
         label: 'Success',
         data: chartData.success,
-        backgroundColor: transparentize(CHART_COLORS.success, 0.35),
+        backgroundColor: transparentize(CHART_COLORS.success, 0.5),
       },
       {
         label: 'Failure',
         data: chartData.failure,
-        backgroundColor: transparentize(CHART_COLORS.fail, 0.35),
+        backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
       },
     ],
   });
