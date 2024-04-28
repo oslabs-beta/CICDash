@@ -499,7 +499,14 @@ export const stepBarData = {
 };
 
 const Mvpmetrics = () => {
-  const [username, setUsername] = useState(''); //for username to populate dropdown options
+  const [username, setUsername] = useState(() => {
+    // Get the value of the 'username' cookie
+    const usernameCookie = document.cookie
+      .split(';')
+      .find(cookie => cookie.trim().startsWith('username='));
+    return usernameCookie ? usernameCookie.split('=')[1] : '';
+  });
+//for username to populate dropdown options
   const [repos, setRepos] = useState([]); //for dropdown menu options
   const [selectedRepo, setSelectedRepo] = useState(''); //for selection from dropdown
 
@@ -736,10 +743,6 @@ const Mvpmetrics = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log('username', username);
-    console.log('repo goes here', repo);
-    const test = fetch(`https://api.github.com/users/${username}/repos`);
-    console.log('test', test);
   };
 
   // for the handtyped field
