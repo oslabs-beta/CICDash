@@ -1,4 +1,5 @@
 const { User } = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 
 const databaseController = {};
 
@@ -6,13 +7,17 @@ const databaseController = {};
 databaseController.registerUser = async (req, res, next) => {
   console.log('* Checking if user is in database...'); // CL*
 
-  // Grab user data passed from prior middleware
-  const username = res.locals.apiResponseData.login;
-  const accessToken = res.locals.authResponseData.access_token;
-  const refreshToken = res.locals.authResponseData.refresh_token;
-  console.log('  - username pulled from res.locals: ', username); //---This is the place username comes into play
-  console.log('  - Access Token pulled from res.locals: ', accessToken);
-  console.log('  - Refresh Token pulled from res.locals: ', refreshToken);
+  // Destrcuture JWT values from res.locals
+  let { username, accessToken, refreshToken } = res.locals;
+
+  //decrypt JWT values
+  username = jwt.verify(username, process.env.JWT_SECRET).username;
+  accessToken = jwt.verify(accessToken, process.env.JWT_SECRET).accessToken;
+  refreshToken = jwt.verify(refreshToken, process.env.JWT_SECRET).refreshToken;
+
+  console.log('  - Decrypted username: ', username); //---This is the place username comes into play
+  // console.log('  - Access Token pulled from res.locals: ', accessToken);
+  // console.log('  - Refresh Token pulled from res.locals: ', refreshToken);
 
   // Handle existing profile
   const profileExists = await User.findOne({ username: username });
@@ -40,7 +45,7 @@ databaseController.registerUser = async (req, res, next) => {
     console.log('  - New user profile added to database'); // CL*
 
     // Pass on user profile object
-    res.locals.user = user;
+    // res.locals.user = user;
     return next();
   }
 };

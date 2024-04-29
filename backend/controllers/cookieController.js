@@ -26,7 +26,9 @@ cookieController.decryptCookie = async (req, res, next) => {
   console.log('* Decrypting cookies...');
 
   // Grab data from res.locals
-  const username = jwt.sign({ username: res.locals.apiResponseData.login }, process.env.JWT_SECRET);
+  const username = jwt.sign(
+    { username: res.locals.apiResponseData.login }, 
+    process.env.JWT_SECRET);
   const accessToken = jwt.sign(
     { accessToken: res.locals.authResponseData.access_token },
     process.env.JWT_SECRET,
