@@ -1,5 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
+const createJWT = require('../utils/JWT');
+const jwt = require('jsonwebtoken');
 
 // Protected variables
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -25,12 +27,15 @@ githubController.auth = async (req, res, next) => {
   });
 
   // Pass on the authentication data sent back by Github (ie Access Token, Refresh Token)
-  res.locals.authResponseData = authResponse.data;
-  console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
+  // res.locals.authResponseData = authResponse.data;
+
+  // console.log('  - Authentication data sent back by Github:', authResponse.data); // CL*
 
   // Grab Access Token from authentication data sent back by Github
   const accessToken = authResponse.data.access_token;
-  // console.log('  - Access token:', accessToken); // CL*
+  const refreshToken = authResponse.data.refresh_token;
+  console.log('  - Access token:', accessToken); // CL*
+  console.log('  - Refresh token:', refreshToken); // CL*
 
   // GET request to Github api for user data using Access Token
   const apiResponse = await axios({
@@ -42,10 +47,26 @@ githubController.auth = async (req, res, next) => {
   });
 
   // Pass on the user data sent back by Github (ie Username)
-  res.locals.apiResponseData = apiResponse.data;
-  console.log('  - User data sent back by Github:', apiResponse.data); // CL*
-  console.log('  - User data sent back by Github username hopefully:', apiResponse.data.login); // CL*
-  res.locals.loginUsername = apiResponse.data.login;
+  // res.locals.apiResponseData = apiResponse.data;
+  const username = apiResponse.data.login;
+  // console.log('  - User data sent back by Github:', apiResponse.data); // CL*
+  console.log('  - Github username:', username); // CL*
+
+  const JWTUsername = jwt.sign({ username: username }, process.env.JWT_SECRET);
+
+  const JWTAccessToken = jwt.sign({ accessToken: accessToken }, process.env.JWT_SECRET);
+
+  const JWTRefreshToken = jwt.sign({ refreshToken: refreshToken }, process.env.JWT_SECRET);
+
+  console.log('  - JWT Username:', JWTUsername); // CL*
+  console.log('  - JWT Access Token:', JWTAccessToken); // CL*
+  console.log('  - JWT Refresh Token:', JWTRefreshToken); // CL*
+
+  res.locals.username = JWTUsername;
+  res.locals.accessToken = JWTAccessToken;
+  res.locals.refreshToken = JWTRefreshToken;
+
+  // res.locals.loginUsername = apiResponse.data.login;
   return next();
 };
 
