@@ -19,4 +19,14 @@ router.use(
   },
 );
 
+router.use(
+  '/verify',
+  authController.verify,
+  (req, res, next) => {
+    res.status(200).json(res.locals.loggedIn);
+    return next();
+  },
+);
+
+
 module.exports = router;
