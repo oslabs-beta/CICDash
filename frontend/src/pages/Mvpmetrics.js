@@ -13,6 +13,7 @@ import {
   PointElement,
   LineElement,
   TimeScale,
+  SubTitle,
 } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import faker from 'faker'; //this is for mock data
@@ -27,9 +28,9 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
+  SubTitle,
 );
-import colorLib from '@kurkle/color';
-
+import colorLib from '@kurkle/color'; //needed for transparentize
 //Runs array -> reformatData -> genChartData
 //Calculate metrics from runs array (array of objects)
 const reformatData = array => {
@@ -75,7 +76,6 @@ const reformatData = array => {
   shapedMetrics.monthData = monthDataArr;
   shapedMetrics.lifetimeAvg = calcAvg(shapedMetrics.lifetimeRuns);
 };
-
 const reformatSteps = array => {
   const stepDataArr = [];
 
@@ -110,17 +110,14 @@ const reformatSteps = array => {
   // Update the global stepMetrics array with new data
   stepMetrics = stepDataArr;
 };
-
 //New shape of metrics after parsing response of /api/github/findRuns
 let shapedMetrics = {
   lifetimeRuns: [],
   monthData: [],
   lifetimeAvg: null,
 };
-
 //For step calculations
 let stepMetrics = [];
-
 //Reads shapedMetrics for conversion to chartData for ChartJS display
 const genChartData = arr => {
   arr.forEach(el => {
@@ -135,7 +132,6 @@ const genChartData = arr => {
     chartData.monthAvg.push(el.monthAvg);
   });
 };
-
 //Reads stepMetrics for conversion to chartData for ChartJS display
 const genChartStepData = arr => {
   arr.forEach(el => {
@@ -144,7 +140,6 @@ const genChartStepData = arr => {
     chartData.stepSuccPct.push(el.success / el.total);
   });
 };
-
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
 let chartData = {
@@ -162,10 +157,8 @@ let chartData = {
   stepFailPct: [],
   stepSuccPct: [],
 };
-
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //HELPER FUNCTIONS TO GENERATE METRICS
-
 const createMonthYear = isoDate => {
   const date = new Date(isoDate);
   const month = date.toLocaleString('default', { month: 'long' }); // Get month name
@@ -259,11 +252,44 @@ const resetShapedMetrics = () => {
     lifetimeAvg: null,
   };
 };
-
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHARTJS OPTIONS AND UTILS
 //options for loading ChartJS animations
 let delayed;
+export function transparentize(value, opacity) {
+  var alpha = opacity === undefined ? 0.5 : 1 - opacity;
+  return colorLib(value).alpha(alpha).rgbString();
+}
+export const CHART_COLORS = {
+  red: '#ef3054',
+  fail: '#E3170A',
+  success: '#00BF63',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: '#00BF63',
+  blue: '#58a4b0',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)',
+  black: '#1E2019',
+};
+//*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+//INITIAL CHART OPTIONS AND DATA
+//Vertical Bar Chart
+export const data = {
+  labels: chartData.labels,
+  datasets: [
+    {
+      label: 'Success',
+      data: chartData.success,
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+    },
+    {
+      label: 'Failure',
+      data: chartData.failure,
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+  ],
+};
 export const options = {
   responsive: true,
   plugins: {
@@ -272,7 +298,7 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Total Workflow Runs',
+      text: 'Workflow Runs by Month',
     },
   },
   animation: {
@@ -294,48 +320,18 @@ export const options = {
     },
   },
 };
-export function transparentize(value, opacity) {
-  var alpha = opacity === undefined ? 0.5 : 1 - opacity;
-  return colorLib(value).alpha(alpha).rgbString();
-}
-export const CHART_COLORS = {
-  // red: 'rgb(255, 99, 132)',
-  // red: '#AC3931',
-  red: '#ef3054',
-  // fail: '#0a122a',
-  fail: '#E3170A',
-  success: '#00BF63',
-  orange: 'rgb(255, 159, 64)',
-  yellow: 'rgb(255, 205, 86)',
-  // green: 'rgb(75, 192, 192)',
-  green: '#00BF63',
-  // blue: 'rgb(54, 162, 235)',
-  blue: '#58a4b0',
-  purple: 'rgb(153, 102, 255)',
-  grey: 'rgb(201, 203, 207)',
-  black: '#1E2019',
-};
-
-//Vertical Bar Chart
-export const data = {
-  labels: chartData.labels,
-  datasets: [
-    {
-      label: 'Success',
-      data: chartData.success,
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-    {
-      label: 'Failure',
-      data: chartData.failure,
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-  ],
-};
-
 //Pie
 export const pieOptions = {
-  aspectRatio: 0.5,
+  aspectRatio: 0.9,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Lifetime Workflow Attempts',
+    },
+  },
 };
 export const pieData = {
   labels: ['Success', 'Failure'],
@@ -350,7 +346,6 @@ export const pieData = {
     },
   ],
 };
-
 //Horizontal Bar Chart
 export const horizBarOptions = {
   indexAxis: 'y',
@@ -362,11 +357,15 @@ export const horizBarOptions = {
   responsive: true,
   plugins: {
     legend: {
-      position: 'right',
+      position: 'top',
     },
     title: {
       display: true,
-      text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+      text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+    },
+    subtitle: {
+      display: true,
+      text: 'Negative is better',
     },
   },
   scales: {
@@ -387,21 +386,17 @@ export const horizBarData = {
     },
   ],
 };
-
 //Combo Bar Chart
 export const comboBarOptions = {
   type: 'bar',
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Monthly vs Lifetime Average (seconds)',
-      },
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Average Run Time: Monthly vs Lifetime (seconds)',
     },
   },
   datasets: {
@@ -440,7 +435,7 @@ export const lineOptions = {
     },
     title: {
       display: true,
-      text: 'Execution Time Trend (seconds)',
+      text: 'Execution Time (seconds)',
     },
   },
   scales: {
@@ -503,7 +498,7 @@ export const stepBarData = {
   labels: chartData.stepLabels,
   datasets: [
     {
-      label: 'Fails',
+      label: 'Fail',
       data: chartData.stepFailPct,
       borderColor: transparentize(CHART_COLORS.fail, 0.5),
       backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
@@ -516,7 +511,7 @@ export const stepBarData = {
     },
   ],
 };
-
+//*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 const Mvpmetrics = () => {
   //Set states
   const [username, setUsername] = useState(''); //for username to populate dropdown options
@@ -551,11 +546,15 @@ const Mvpmetrics = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'right',
+        position: 'top',
       },
       title: {
         display: true,
-        text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+        text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+      },
+      subtitle: {
+        display: true,
+        text: 'Negative is better',
       },
     },
     scales: {
@@ -612,17 +611,21 @@ const Mvpmetrics = () => {
       responsive: true,
       plugins: {
         legend: {
-          position: 'right',
+          position: 'top',
         },
         title: {
           display: true,
-          text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+          text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+        },
+        subtitle: {
+          display: true,
+          text: 'Negative is better',
         },
       },
       scales: {
         x: {
-          min: -maxVal,
-          max: maxVal,
+          min: -maxVal - 10,
+          max: maxVal + 10,
         },
       },
     });
@@ -807,7 +810,7 @@ const Mvpmetrics = () => {
           <Bar options={options} data={vertBarChart} />
         </div>
         <div className={'viz-b'}>
-          <Pie data={pieChart} />
+          <Pie options={pieOptions} data={pieChart} />
         </div>
         <div>
           <Bar options={horizBarOptions} data={horizBarChart} />
@@ -816,7 +819,7 @@ const Mvpmetrics = () => {
           <Bar options={comboBarOptions} data={comboBarChart} />
         </div>
         <div>
-          <Line options={lineOptions} data={lineChart} />;
+          <Line options={lineOptions} data={lineChart} />
         </div>
         <div>
           <Bar options={stepBarOptions} data={stepChart} />
