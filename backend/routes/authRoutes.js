@@ -11,7 +11,6 @@ router.use(
   '/github/callback',
   githubController.auth,
   cookieController.setCookie,
-  // githubController.install,//can be deleted. added to access install middleware in GH controller called install
   databaseController.registerUser,
   (req, res, next) => {
     res.redirect('http://localhost:8080/results');
