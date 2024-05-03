@@ -2,5 +2,5 @@
 node_modules
 .prettierrc
 package-lock.json
-.DS_Store
+.DS_store
 node_modules/.package-lock.json
