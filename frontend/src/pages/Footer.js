@@ -8,7 +8,7 @@ const Footer = () => {
           <div className='col-md-6'>
             <span className='text-muted'>© 2024 CICDEEZ™. All rights reserved.</span>
           </div>
-          <div className='col-md-6 text-md-right' style={{ marginLeft: '60vw' }}>
+          <div className='col-md-6 text-md-right'>
             <a href='#' className='text-muted mx-2'>
               LinkedIn
             </a>
