@@ -31,8 +31,8 @@ const Home = () => {
             <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
-            <ul className='navbar-nav ml-auto'>
+          <Navbar.Collapse className='justify-content-end' id='basic-navbar-nav'>
+            <ul className='navbar-nav'>
               {/* Use HashLink to scroll to specific section */}
               <li className='nav-item'>
                 <NavLink smooth to='#main' className='nav-link'>
@@ -47,6 +47,11 @@ const Home = () => {
               <li className='nav-item'>
                 <NavLink smooth to='#contact' className='nav-link'>
                   Contact
+                </NavLink>
+              </li>
+              <li className='nav-item'>
+                <NavLink smooth to='#learn-more' className='nav-link'>
+                  Learn More
                 </NavLink>
               </li>
             </ul>
@@ -72,18 +77,7 @@ const Home = () => {
           Gain actionable insights on any workflow, any job, any step, from anytime.
         </p>
         <Link to='https://github.com/login/oauth/authorize?client_id=Iv1.cdabdacb14c5030c'>
-          <Button
-            variant='primary'
-            size='lg'
-            style={{
-              backgroundImage: 'linear-gradient(to right, #00bf63, #01937b)',
-              border: 'none',
-              marginTop: '10px',
-              transition: 'background-image 0.3s ease', // Add transition property
-              cursor: 'pointer', // Change cursor on hover
-            }}
-            className='gradient-hover'
-          >
+          <Button variant='success' size='lg'>
             Log In with GitHub
           </Button>
         </Link>
@@ -200,7 +194,7 @@ const Home = () => {
       </div>
 
       <Container
-        id='main'
+        id='learn-more'
         className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
         style={{ paddingTop: '130px', paddingBottom: '250px' }}
       >
