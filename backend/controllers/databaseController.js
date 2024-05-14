@@ -11,7 +11,7 @@ databaseController.registerUser = async (req, res, next) => {
   let { username, accessToken, refreshToken } = res.locals;
 
   //decrypt JWT values
-  username = jwt.verify(username, process.env.JWT_SECRET).username;
+  // username = jwt.verify(username, process.env.JWT_SECRET).username;
   accessToken = jwt.verify(accessToken, process.env.JWT_SECRET).accessToken;
   refreshToken = jwt.verify(refreshToken, process.env.JWT_SECRET).refreshToken;
 
@@ -210,13 +210,19 @@ databaseController.saveJobs = async (req, res, next) => {
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+
 databaseController.findRuns = async (req, res, next) => {
   console.log(`* Fetching existing runs in database...`); // CL*
+  const { username } = req.cookies;
+
+  //decrypt JWT values
+  // const decodedUser = jwt.verify(username, process.env.JWT_SECRET);
   try {
     const { owner, repo } = req.query;
     // Query the database to check if the username has a runs entry with any of the run IDs
     const existingRuns = await User.find({
-      username: req.cookies.username,
+      username: username,
       runs: {
         $elemMatch: {
           repo_owner: owner,
@@ -233,7 +239,8 @@ databaseController.findRuns = async (req, res, next) => {
     console.error('Error finding runs:', error);
   }
 };
-//
+
+//////////////////////////////////////////////////////////////////////
 
 databaseController.saveUsername = async (req, res, next) => {
   console.log(`* saving username?...`); // CL*
