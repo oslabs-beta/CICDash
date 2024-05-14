@@ -4,6 +4,7 @@ const express = require('express');
 const githubController = require('../controllers/githubController.js');
 const cookieController = require('../controllers/cookieController.js');
 const databaseController = require('../controllers/databaseController.js');
+const authController = require('../controllers/authController.js');
 
 const router = express();
 
@@ -22,7 +23,7 @@ router.use(
   '/verify',
   authController.verify,
   (req, res, next) => {
-    res.status(200).json(res.locals.loggedIn);
+    res.status(200).json(res.locals.correctUser);
     return next();
   },
 );

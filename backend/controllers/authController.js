@@ -2,7 +2,7 @@ const createJWT = require('../utils/JWT');
 
 const authController = {};
 
-authControllers.verifyToken = (req, res, next) => {
+authController.verify = (req, res, next) => {
   try {
     let token = req.cookies.accessToken;
     console.log('>>> token in authControllers.verifyToken: ', token);
@@ -46,3 +46,5 @@ authControllers.verifyToken = (req, res, next) => {
     return next('Error in authControllers.verifyToken: ' + JSON.stringify(err));
   }
 };
+
+module.exports = authController;

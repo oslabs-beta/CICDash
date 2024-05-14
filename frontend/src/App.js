@@ -10,9 +10,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
-        <ProtectedRoute>
+        <Route element={<ProtectedRoute/>}>
           <Route path='/results' element={<Mvpmetrics />} />
-        </ProtectedRoute>
+        </Route>
       </Routes>
     </BrowserRouter>
   );
