@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+// Bootstrap Styling/Page Layout
+import { Container, Row, Col, Button, Navbar, Form, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Scroll to specific section functionality
+import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
+
+// Assets
+import logo from '/frontend/assets/cicdeez_logo_h.png';
+
+// Chart JS
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,9 +25,13 @@ import {
   PointElement,
   LineElement,
   TimeScale,
+  SubTitle,
 } from 'chart.js';
+
 import { Bar, Pie, Line } from 'react-chartjs-2';
-import faker from 'faker'; //this is for mock data
+
+// import faker from 'faker'; //this is for mock data
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,9 +43,10 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
+  SubTitle,
 );
-import colorLib from '@kurkle/color';
 
+import colorLib from '@kurkle/color'; //needed for transparentize
 //Runs array -> reformatData -> genChartData
 //Calculate metrics from runs array (array of objects)
 const reformatData = array => {
@@ -128,15 +145,12 @@ const genChartData = arr => {
     chartData.monthIso.push(el.isoDate);
     chartData.success.push(el.success);
     chartData.failure.push(el.failure);
-    chartData.pieData[0] += el.failure;
-    chartData.pieData[1] += el.success;
+    chartData.pieData[1] += el.failure;
+    chartData.pieData[0] += el.success;
     chartData.horizBarData.push(calcAvg(el.runTimes) - shapedMetrics.lifetimeAvg);
     chartData.straightLine.push(shapedMetrics.lifetimeAvg);
     chartData.monthAvg.push(el.monthAvg);
   });
-  // test1 = chartData.horizBarData.reduce((max, num) => Math.max(max, Math.abs(num)), 0);
-  // horizBarOptions.scales.x.min = -test1;
-  // horizBarOptions.scales.x.min = test1;
 };
 
 //Reads stepMetrics for conversion to chartData for ChartJS display
@@ -147,13 +161,14 @@ const genChartStepData = arr => {
     chartData.stepSuccPct.push(el.success / el.total);
   });
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
 let chartData = {
   labels: [],
   success: [], //[1, 2, 3, ...]
   failure: [], //[5, 5, 5, ...]
-  pieData: [0, 0], //[12, 19] [Failure, Success]
+  pieData: [0, 0], //[12, 19] [Success, Failure]
   horizBarData: [], //[-5, 12, -13, 4, -5, 6, -7] Month avg workflow run - Lifetime avg workflow run (seconds)
   straightLine: [], //Lifetime average run line
   monthAvg: [], //Monthly average
@@ -167,7 +182,6 @@ let chartData = {
 
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //HELPER FUNCTIONS TO GENERATE METRICS
-
 const createMonthYear = isoDate => {
   const date = new Date(isoDate);
   const month = date.toLocaleString('default', { month: 'long' }); // Get month name
@@ -266,44 +280,26 @@ const resetShapedMetrics = () => {
 //CHARTJS OPTIONS AND UTILS
 //options for loading ChartJS animations
 let delayed;
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Total Workflow Runs',
-    },
-  },
-  animation: {
-    onComplete: () => {
-      delayed = true;
-    },
-    delay: context => {
-      let delay = 0;
-      if (context.type === 'data' && context.mode === 'default' && !delayed) {
-        delay = context.dataIndex * 300 + context.datasetIndex * 100;
-      }
-      return delay;
-    },
-  },
-};
 export function transparentize(value, opacity) {
   var alpha = opacity === undefined ? 0.5 : 1 - opacity;
   return colorLib(value).alpha(alpha).rgbString();
 }
+
 export const CHART_COLORS = {
-  red: 'rgb(255, 99, 132)',
+  red: '#ef3054',
+  fail: '#E3170A',
+  success: '#00BF63',
   orange: 'rgb(255, 159, 64)',
   yellow: 'rgb(255, 205, 86)',
-  green: 'rgb(75, 192, 192)',
-  blue: 'rgb(54, 162, 235)',
+  green: '#00BF63',
+  blue: '#58a4b0',
   purple: 'rgb(153, 102, 255)',
   grey: 'rgb(201, 203, 207)',
+  black: '#1E2019',
 };
 
+//*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+//INITIAL CHART OPTIONS AND DATA
 //Vertical Bar Chart
 export const data = {
   labels: chartData.labels,
@@ -321,19 +317,61 @@ export const data = {
   ],
 };
 
+export const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Workflow Runs by Month',
+    },
+  },
+  animation: {
+    onComplete: () => {
+      delayed = true;
+    },
+    delay: context => {
+      let delay = 0;
+      if (context.type === 'data' && context.mode === 'default' && !delayed) {
+        delay = context.dataIndex * 300 + context.datasetIndex * 100;
+      }
+      return delay;
+    },
+  },
+  datasets: {
+    bar: {
+      barPercentage: 0.75,
+      categoryPercentage: 0.75,
+    },
+  },
+};
+
 //Pie
 export const pieOptions = {
-  aspectRatio: 0.5,
+  aspectRatio: 0.9,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Lifetime Workflow Attempts',
+    },
+  },
 };
+
 export const pieData = {
-  labels: ['Failure', 'Success'],
+  labels: ['Success', 'Failure'],
   datasets: [
     {
       label: 'Lifetime Workflow Attempts',
       data: chartData.pieData,
-      backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
-      borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-      borderWidth: 1,
+      backgroundColor: [
+        transparentize(CHART_COLORS.success, 0.5),
+        transparentize(CHART_COLORS.fail, 0.5),
+      ],
     },
   ],
 };
@@ -343,17 +381,21 @@ export const horizBarOptions = {
   indexAxis: 'y',
   elements: {
     bar: {
-      borderWidth: 2,
+      borderWidth: 1,
     },
   },
   responsive: true,
   plugins: {
     legend: {
-      position: 'right',
+      position: 'top',
     },
     title: {
       display: true,
-      text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+      text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+    },
+    subtitle: {
+      display: true,
+      text: 'Negative is better',
     },
   },
   scales: {
@@ -363,14 +405,15 @@ export const horizBarOptions = {
     },
   },
 };
+
 export const horizBarData = {
-  labels: chartData.labels,
+  labels: chartData.labels.reverse(),
   datasets: [
     {
       label: '2024',
-      data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
     },
   ],
 };
@@ -378,40 +421,45 @@ export const horizBarData = {
 //Combo Bar Chart
 export const comboBarOptions = {
   type: 'bar',
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Monthly vs Lifetime Average (seconds)',
-      },
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+    },
+  },
+  datasets: {
+    bar: {
+      barPercentage: 0.5,
+      categoryPercentage: 0.75,
     },
   },
 };
+
 export const comboBarData = {
   labels: chartData.labels,
   datasets: [
     {
       label: 'Month',
       data: chartData.monthAvg,
-      borderColor: CHART_COLORS.red,
-      backgroundColor: transparentize(CHART_COLORS.red, 0.5),
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
       order: 0,
     },
     {
       label: 'Lifetime',
       data: chartData.straightLine,
-      borderColor: CHART_COLORS.blue,
-      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+      borderColor: transparentize(CHART_COLORS.red, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.red, 0.5),
       type: 'line',
       order: 1,
     },
   ],
 };
+
 //Line Chart Options
 export const lineOptions = {
   responsive: true,
@@ -421,7 +469,7 @@ export const lineOptions = {
     },
     title: {
       display: true,
-      text: 'Execution Time Trend (seconds)',
+      text: 'Execution Time (seconds)',
     },
   },
   scales: {
@@ -430,17 +478,19 @@ export const lineOptions = {
     },
   },
 };
+
 export const lineChartData = {
   labels: chartData.eachRunLabel,
   datasets: [
     {
       label: 'Run Times',
       data: chartData.eachRunDuration,
-      borderColor: CHART_COLORS.blue,
-      backgroundColor: CHART_COLORS.blue,
+      borderColor: transparentize(CHART_COLORS.blue, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
     },
   ],
 };
+
 //Step Bar Chart
 export const stepBarOptions = {
   indexAxis: 'y',
@@ -480,45 +530,52 @@ export const stepBarOptions = {
     },
   },
 };
+
 export const stepBarData = {
   labels: chartData.stepLabels,
   datasets: [
     {
-      label: 'Fails',
+      label: 'Fail',
       data: chartData.stepFailPct,
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      borderColor: transparentize(CHART_COLORS.fail, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
     },
     {
       label: 'Success',
       data: chartData.stepSuccPct,
-      borderColor: 'rgb(75, 192, 192)',
-      backgroundColor: 'rgba(75, 192, 192, 0.5)',
+      borderColor: transparentize(CHART_COLORS.success, 0.5),
+      backgroundColor: transparentize(CHART_COLORS.success, 0.5),
     },
   ],
 };
 
+//*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 const Mvpmetrics = () => {
-  const [username, setUsername] = useState(''); //for username to populate dropdown options
+  const [username, setUsername] = useState(() => {
+    // Get the value of the 'username' cookie
+    const usernameCookie = document.cookie
+      .split(';')
+      .find(cookie => cookie.trim().startsWith('username='));
+    return usernameCookie ? usernameCookie.split('=')[1] : '';
+  });
+
+  //for username to populate dropdown options
   const [repos, setRepos] = useState([]); //for dropdown menu options
   const [selectedRepo, setSelectedRepo] = useState(''); //for selection from dropdown
-
   const [owner, setOwner] = useState(''); //for type in field
   const [repo, setRepo] = useState(''); //for type in field
-
-  //Set state for charts
   const [vertBarChart, setVertBarChart] = useState({
-    labels: chartData.monthIso,
+    labels: chartData.labels,
     datasets: [
       {
         label: 'Success',
         data: chartData.success,
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        backgroundColor: transparentize(CHART_COLORS.success, 0.5),
       },
       {
         label: 'Failure',
         data: chartData.failure,
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
       },
     ],
   });
@@ -534,11 +591,15 @@ const Mvpmetrics = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'right',
+        position: 'top',
       },
       title: {
         display: true,
-        text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
+        text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+      },
+      subtitle: {
+        display: true,
+        text: 'Negative is better',
       },
     },
     scales: {
@@ -548,28 +609,131 @@ const Mvpmetrics = () => {
       },
     },
   });
-  const [comboBarChart, setComboBarChart] = useState({
-    labels: chartData.labels,
-    datasets: [
-      {
-        label: 'Month',
-        data: chartData.monthAvg,
-        borderColor: CHART_COLORS.purple,
-        backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
-        order: 0,
-      },
-      {
-        label: 'Lifetime',
-        data: chartData.straightLine,
-        borderColor: CHART_COLORS.blue,
-        backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
-        type: 'line',
-        order: 1,
-      },
-    ],
-  });
+  const [comboBarChart, setComboBarChart] = useState(comboBarData);
   const [lineChart, setLineChart] = useState(lineChartData);
   const [stepChart, setStepChart] = useState(stepBarData);
+
+  //Re-render charts and data
+  const reloadCharts = () => {
+    setVertBarChart({
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: 'Success',
+          data: chartData.success,
+          backgroundColor: transparentize(CHART_COLORS.success, 0.5),
+        },
+        {
+          label: 'Failure',
+          data: chartData.failure,
+          backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
+        },
+      ],
+    });
+    setPieChart({
+      labels: ['Success', 'Failure'],
+      datasets: [
+        {
+          label: 'Lifetime Workflow Attempts',
+          data: chartData.pieData,
+          backgroundColor: [
+            transparentize(CHART_COLORS.success, 0.5),
+            transparentize(CHART_COLORS.fail, 0.5),
+          ],
+          // borderColor: [CHART_COLORS.black, CHART_COLORS.black],
+          // borderWidth: 1,
+        },
+      ],
+    });
+    const maxVal = Math.max.apply(null, chartData.horizBarData) + 10; //for use in centering horiz bar chart
+    setHorizBarOptions({
+      indexAxis: 'y',
+      elements: {
+        bar: {
+          borderWidth: 1,
+        },
+      },
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Average Run Time: Monthly vs Lifetime (seconds)',
+        },
+        subtitle: {
+          display: true,
+          text: 'Negative is better',
+        },
+      },
+      scales: {
+        x: {
+          min: -maxVal - 10,
+          max: maxVal + 10,
+        },
+      },
+    });
+    setHorizBarChart({
+      labels: chartData.labels.reverse(),
+      datasets: [
+        {
+          label: '2024',
+          data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
+          borderColor: transparentize(CHART_COLORS.blue, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+        },
+      ],
+    });
+    setComboBarChart({
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: 'Month',
+          data: chartData.monthAvg,
+          borderColor: transparentize(CHART_COLORS.blue, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+          order: 0,
+        },
+        {
+          label: 'Lifetime',
+          data: chartData.straightLine,
+          borderColor: transparentize(CHART_COLORS.red, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.red, 0.5),
+          type: 'line',
+          order: 1,
+        },
+      ],
+    });
+    setLineChart({
+      labels: chartData.eachRunLabel,
+      datasets: [
+        {
+          label: 'Run Times',
+          data: chartData.eachRunDuration,
+          borderColor: transparentize(CHART_COLORS.blue, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
+        },
+      ],
+    });
+    setStepChart({
+      labels: chartData.stepLabels,
+      datasets: [
+        {
+          label: 'Fails',
+          data: chartData.stepFailPct,
+          borderColor: transparentize(CHART_COLORS.fail, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.fail, 0.5),
+        },
+        {
+          label: 'Success',
+          data: chartData.stepSuccPct,
+          borderColor: transparentize(CHART_COLORS.success, 0.5),
+          backgroundColor: transparentize(CHART_COLORS.success, 0.5),
+        },
+      ],
+    });
+  };
 
   useEffect(() => {
     if (username) {
@@ -606,7 +770,6 @@ const Mvpmetrics = () => {
           repo: repo,
         },
       });
-      // console.log('findJobs:', findJobs.data[0].runs);
       console.log('findJobs:', findJobs.data[0].runs);
       resetShapedMetrics();
       resetChartData();
@@ -618,117 +781,7 @@ const Mvpmetrics = () => {
       genChartStepData(stepMetrics);
       console.log('chartData: ', chartData);
       //Load Chart JS data after fetch
-      setVertBarChart({
-        labels: chartData.labels,
-        datasets: [
-          {
-            label: 'Success',
-            data: chartData.success,
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          },
-          {
-            label: 'Failure',
-            data: chartData.failure,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-        ],
-      });
-      setPieChart({
-        labels: ['Failure', 'Success'],
-        datasets: [
-          {
-            label: 'Lifetime Workflow Attempts',
-            data: chartData.pieData,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
-            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-            borderWidth: 1,
-          },
-        ],
-      });
-      const maxVal = Math.max.apply(null, chartData.horizBarData) + 10; //for use in centering horiz bar chart
-      setHorizBarOptions({
-        indexAxis: 'y',
-        elements: {
-          bar: {
-            borderWidth: 2,
-          },
-        },
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'right',
-          },
-          title: {
-            display: true,
-            text: 'Monthly Run Time vs Lifetime Average Run Time (seconds)',
-          },
-        },
-        scales: {
-          x: {
-            min: -maxVal,
-            max: maxVal,
-          },
-        },
-      });
-      setHorizBarChart({
-        labels: chartData.labels.reverse(),
-        datasets: [
-          {
-            label: '2024',
-            data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
-            borderColor: CHART_COLORS.red,
-            backgroundColor: CHART_COLORS.orange,
-          },
-        ],
-      });
-      setComboBarChart({
-        labels: chartData.labels,
-        datasets: [
-          {
-            label: 'Month',
-            data: chartData.monthAvg,
-            borderColor: CHART_COLORS.purple,
-            backgroundColor: transparentize(CHART_COLORS.purple, 0.5),
-            order: 0,
-          },
-          {
-            label: 'Lifetime',
-            data: chartData.straightLine,
-            borderColor: CHART_COLORS.blue,
-            backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
-            type: 'line',
-            order: 1,
-          },
-        ],
-      });
-      setLineChart({
-        labels: chartData.eachRunLabel,
-        datasets: [
-          {
-            label: 'Run Times (seconds)',
-            data: chartData.eachRunDuration,
-            borderColor: CHART_COLORS.green,
-            backgroundColor: CHART_COLORS.green,
-          },
-        ],
-      });
-      setStepChart({
-        labels: chartData.stepLabels,
-        datasets: [
-          {
-            label: 'Fails',
-            data: chartData.stepFailPct,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-          {
-            label: 'Success',
-            data: chartData.stepSuccPct,
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          },
-        ],
-      });
+      reloadCharts();
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -736,10 +789,6 @@ const Mvpmetrics = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log('username', username);
-    console.log('repo goes here', repo);
-    const test = fetch(`https://api.github.com/users/${username}/repos`);
-    console.log('test', test);
   };
 
   // for the handtyped field
@@ -752,72 +801,181 @@ const Mvpmetrics = () => {
 
   return (
     <>
-      <div className='searchBar'>
-        <label>Please enter your Username and select a public Repository</label>
-        <form onSubmit={handleSubmit}>
-          <input
-            type='text'
-            placeholder='Enter GitHub Username'
-            id='username'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-          {repos.length > 0 && (
-            <select value={selectedRepo} onChange={handleRepoChange}>
-              <option value=''>Select a repository</option>
-              {repos.map(repo => (
-                <option key={repo.name} value={repo.url}>
-                  {repo.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <button type='submit'>Submit</button>
-        </form>
-      </div>
+      <Navbar className='bg-body-tertiary'>
+        <Container>
+          <Navbar.Brand href='/'>
+            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+          </Navbar.Brand>
+          <Navbar.Toggle />
+          <Navbar.Collapse className='justify-content-end'>
+            <Navbar.Text style={{ marginRight: '30px' }}>
+              Signed in as: <a href='#login'>{username}</a>
+            </Navbar.Text>
+            <Link to='https://google.com'>
+              <Button
+                variant='primary'
+                size='md'
+                style={{
+                  backgroundColor: 'tomato',
+                  border: 'none',
+                }}
+              >
+                Log Out
+              </Button>
+            </Link>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-      <div className='searchBar'>
-        <label>Please enter your Owner and Repository</label>
-        <form onSubmit={handleSubmitTyped}>
-          <input
-            type='text'
-            placeholder='Enter Owner'
-            id='owner'
-            value={owner}
-            onChange={e => setOwner(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Enter Repository Name'
-            id='repo'
-            value={repo}
-            onChange={e => setRepo(e.target.value)}
-          />
-          <button type='submit'>Submit</button>
-        </form>
-      </div>
+      <Container
+        id='owner-repo-input'
+        className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
+        style={{ paddingTop: '50px' }}
+      >
+        <h1 style={{ fontWeight: 'bold', fontSize: '30px', marginBottom: '20px' }}>
+          Hello, {username}
+        </h1>
+        <Navbar className='justify-content-center'>
+          <Form inline onSubmit={handleSubmitTyped}>
+            <Row className='align-items-center'>
+              <Col xs='auto'>
+                <Form.Control
+                  placeholder='Repo Owner'
+                  aria-label='Owner'
+                  aria-describedby='basic-addon1'
+                  value={owner}
+                  onChange={e => setOwner(e.target.value)}
+                />
+              </Col>
+              <Col xs='auto'>
+                <Form.Control
+                  type='text'
+                  placeholder='Repo Name'
+                  className='mr-sm-2'
+                  value={repo}
+                  onChange={e => setRepo(e.target.value)}
+                />
+              </Col>
+              <Col xs='auto'>
+                <Button variant='success' type='submit'>
+                  Submit
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Navbar>
+        <Alert
+          key={'light'}
+          variant={'light'}
+          style={{ marginTop: '20px', color: 'gray', fontSize: '14px' }}
+        >
+          note: if you'd like to access a repo from an owner other than yourself, you must be apart
+          of that repo on GitHub
+        </Alert>
+      </Container>
 
-      <div className={'grid-container'}>
-        <div className={'viz-a'}>
-          <Bar options={options} data={vertBarChart} />
-        </div>
-        <div className={'viz-b'}>
-          <Pie data={pieChart} />
-        </div>
-        <div>
-          <Bar options={horizBarOptions} data={horizBarChart} />
-        </div>
-        <div>
-          <Bar options={comboBarOptions} data={comboBarChart} />
-        </div>
-        <div>
-          <Line options={lineOptions} data={lineChart} />;
-        </div>
-        <div>
-          <Bar options={stepBarOptions} data={stepChart} />
-        </div>
+      <div id='contact' className='bg-white py-5'>
+        <Container>
+          <div style={{ paddingBottom: '80px' }}>
+            <h1 className='text-center' style={{ fontWeight: 'bold', fontSize: '30px' }}>
+              Your workflow metrics:
+            </h1>
+          </div>
+          <Row className='align-items-between justify-content-between'>
+            <Col className='gx-4'>
+              <Bar options={options} data={vertBarChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Pie options={pieOptions} data={pieChart} />
+            </Col>
+          </Row>
+          <Row className='align-items-center justify-content-center'>
+            <Col className='gx-4'>
+              <Bar options={horizBarOptions} data={horizBarChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Bar options={comboBarOptions} data={comboBarChart} />
+            </Col>
+          </Row>
+          <Row className='align-items-center justify-content-center'>
+            <Col className='gx-4'>
+              <Line options={lineOptions} data={lineChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Bar options={stepBarOptions} data={stepChart} />
+            </Col>
+          </Row>
+        </Container>
       </div>
     </>
+
+    // <>
+    //   <div className='searchBar'>
+    //     <label>Please enter your Username and select a public Repository</label>
+    //     <form onSubmit={handleSubmit}>
+    //       <input
+    //         type='text'
+    //         placeholder='Enter GitHub Username'
+    //         id='username'
+    //         value={username}
+    //         onChange={e => setUsername(e.target.value)}
+    //       />
+    //       {repos.length > 0 && (
+    //         <select value={selectedRepo} onChange={handleRepoChange}>
+    //           <option value=''>Select a repository</option>
+    //           {repos.map(repo => (
+    //             <option key={repo.name} value={repo.url}>
+    //               {repo.name}
+    //             </option>
+    //           ))}
+    //         </select>
+    //       )}
+    //       <button type='submit'>Submit</button>
+    //     </form>
+    //   </div>
+
+    //   <div className='searchBar'>
+    //     <label>Please enter your Owner and Repository</label>
+    //     <form onSubmit={handleSubmitTyped}>
+    //       <input
+    //         type='text'
+    //         placeholder='Enter Owner'
+    //         id='owner'
+    //         value={owner}
+    //         onChange={e => setOwner(e.target.value)}
+    //       />
+    //       <input
+    //         type='text'
+    //         placeholder='Enter Repository Name'
+    //         id='repo'
+    //         value={repo}
+    //         onChange={e => setRepo(e.target.value)}
+    //       />
+    //       <button type='submit'>Submit</button>
+    //     </form>
+    //   </div>
+
+    //   <div className={'grid-container'}>
+    //     <div className={'viz-a'}>
+    //       <Bar options={options} data={vertBarChart} />
+    //     </div>
+    //     <div className={'viz-b'}>
+    //       <Pie options={pieOptions} data={pieChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={horizBarOptions} data={horizBarChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={comboBarOptions} data={comboBarChart} />
+    //     </div>
+    //     <div>
+    //       <Line options={lineOptions} data={lineChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={stepBarOptions} data={stepChart} />
+    //     </div>
+    //   </div>
+    // </>
   );
 };
 
