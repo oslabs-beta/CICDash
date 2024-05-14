@@ -18,7 +18,7 @@ authControllers.verifyToken = (req, res, next) => {
     }
 
     // if there is token then verify its token
-    jwt.verify(token, process.env.TOKEN_SECRET, async (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
           res.locals.correctUser = false;
