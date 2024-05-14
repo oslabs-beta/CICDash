@@ -62,7 +62,7 @@ githubController.auth = async (req, res, next) => {
   console.log('  - JWT Access Token:', JWTAccessToken); // CL*
   console.log('  - JWT Refresh Token:', JWTRefreshToken); // CL*
 
-  res.locals.username = JWTUsername;
+  res.locals.username = username;
   res.locals.accessToken = JWTAccessToken;
   res.locals.refreshToken = JWTRefreshToken;
 
@@ -85,7 +85,8 @@ githubController.getRunIds = async (req, res, next) => {
 
   try {
     // Grab Access Token from cookies
-    const accessToken = req.cookies.access_token;
+    let accessToken = req.cookies.access_token;
+    accessToken = jwt.verify(accessToken, process.env.JWT_SECRET).accessToken;
     console.log('  - Access Token read from cookies: ', accessToken); // CL*
 
     // GET request to Github api for user runs data using Access Token
@@ -136,7 +137,8 @@ githubController.getJobs = async (req, res, next) => {
     console.log('  - Repo pulled from request object: ', repo);
 
     // Grab Access Token from cookies
-    const accessToken = req.cookies.access_token;
+    let accessToken = req.cookies.access_token;
+    accessToken = jwt.verify(accessToken, process.env.JWT_SECRET).accessToken;
     console.log('  - Access Token read from cookies: ', accessToken); // CL*
 
     try {
