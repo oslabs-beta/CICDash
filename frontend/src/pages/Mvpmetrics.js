@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+// Bootstrap Styling/Page Layout
+import { Container, Row, Col, Button, Navbar, Form, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Scroll to specific section functionality
+import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
+
+// Assets
+import logo from '/frontend/assets/cicdeez_logo_h.png';
+
+// Chart JS
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,8 +27,11 @@ import {
   TimeScale,
   SubTitle,
 } from 'chart.js';
+
 import { Bar, Pie, Line } from 'react-chartjs-2';
-import faker from 'faker'; //this is for mock data
+
+// import faker from 'faker'; //this is for mock data
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,6 +45,7 @@ ChartJS.register(
   TimeScale,
   SubTitle,
 );
+
 import colorLib from '@kurkle/color'; //needed for transparentize
 //Runs array -> reformatData -> genChartData
 //Calculate metrics from runs array (array of objects)
@@ -76,6 +92,7 @@ const reformatData = array => {
   shapedMetrics.monthData = monthDataArr;
   shapedMetrics.lifetimeAvg = calcAvg(shapedMetrics.lifetimeRuns);
 };
+
 const reformatSteps = array => {
   const stepDataArr = [];
 
@@ -110,14 +127,17 @@ const reformatSteps = array => {
   // Update the global stepMetrics array with new data
   stepMetrics = stepDataArr;
 };
+
 //New shape of metrics after parsing response of /api/github/findRuns
 let shapedMetrics = {
   lifetimeRuns: [],
   monthData: [],
   lifetimeAvg: null,
 };
+
 //For step calculations
 let stepMetrics = [];
+
 //Reads shapedMetrics for conversion to chartData for ChartJS display
 const genChartData = arr => {
   arr.forEach(el => {
@@ -132,6 +152,7 @@ const genChartData = arr => {
     chartData.monthAvg.push(el.monthAvg);
   });
 };
+
 //Reads stepMetrics for conversion to chartData for ChartJS display
 const genChartStepData = arr => {
   arr.forEach(el => {
@@ -140,6 +161,7 @@ const genChartStepData = arr => {
     chartData.stepSuccPct.push(el.success / el.total);
   });
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHART JS DATA
 let chartData = {
@@ -157,6 +179,7 @@ let chartData = {
   stepFailPct: [],
   stepSuccPct: [],
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //HELPER FUNCTIONS TO GENERATE METRICS
 const createMonthYear = isoDate => {
@@ -252,6 +275,7 @@ const resetShapedMetrics = () => {
     lifetimeAvg: null,
   };
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //CHARTJS OPTIONS AND UTILS
 //options for loading ChartJS animations
@@ -260,6 +284,7 @@ export function transparentize(value, opacity) {
   var alpha = opacity === undefined ? 0.5 : 1 - opacity;
   return colorLib(value).alpha(alpha).rgbString();
 }
+
 export const CHART_COLORS = {
   red: '#ef3054',
   fail: '#E3170A',
@@ -272,6 +297,7 @@ export const CHART_COLORS = {
   grey: 'rgb(201, 203, 207)',
   black: '#1E2019',
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 //INITIAL CHART OPTIONS AND DATA
 //Vertical Bar Chart
@@ -290,6 +316,7 @@ export const data = {
     },
   ],
 };
+
 export const options = {
   responsive: true,
   plugins: {
@@ -320,6 +347,7 @@ export const options = {
     },
   },
 };
+
 //Pie
 export const pieOptions = {
   aspectRatio: 0.9,
@@ -333,6 +361,7 @@ export const pieOptions = {
     },
   },
 };
+
 export const pieData = {
   labels: ['Success', 'Failure'],
   datasets: [
@@ -346,6 +375,7 @@ export const pieData = {
     },
   ],
 };
+
 //Horizontal Bar Chart
 export const horizBarOptions = {
   indexAxis: 'y',
@@ -375,6 +405,7 @@ export const horizBarOptions = {
     },
   },
 };
+
 export const horizBarData = {
   labels: chartData.labels.reverse(),
   datasets: [
@@ -386,6 +417,7 @@ export const horizBarData = {
     },
   ],
 };
+
 //Combo Bar Chart
 export const comboBarOptions = {
   type: 'bar',
@@ -406,6 +438,7 @@ export const comboBarOptions = {
     },
   },
 };
+
 export const comboBarData = {
   labels: chartData.labels,
   datasets: [
@@ -426,6 +459,7 @@ export const comboBarData = {
     },
   ],
 };
+
 //Line Chart Options
 export const lineOptions = {
   responsive: true,
@@ -444,6 +478,7 @@ export const lineOptions = {
     },
   },
 };
+
 export const lineChartData = {
   labels: chartData.eachRunLabel,
   datasets: [
@@ -455,6 +490,7 @@ export const lineChartData = {
     },
   ],
 };
+
 //Step Bar Chart
 export const stepBarOptions = {
   indexAxis: 'y',
@@ -494,6 +530,7 @@ export const stepBarOptions = {
     },
   },
 };
+
 export const stepBarData = {
   labels: chartData.stepLabels,
   datasets: [
@@ -511,9 +548,9 @@ export const stepBarData = {
     },
   ],
 };
+
 //*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
 const Mvpmetrics = () => {
-
   const [username, setUsername] = useState(() => {
     // Get the value of the 'username' cookie
     const usernameCookie = document.cookie
@@ -521,7 +558,8 @@ const Mvpmetrics = () => {
       .find(cookie => cookie.trim().startsWith('username='));
     return usernameCookie ? usernameCookie.split('=')[1] : '';
   });
-//for username to populate dropdown options
+
+  //for username to populate dropdown options
   const [repos, setRepos] = useState([]); //for dropdown menu options
   const [selectedRepo, setSelectedRepo] = useState(''); //for selection from dropdown
   const [owner, setOwner] = useState(''); //for type in field
@@ -763,72 +801,181 @@ const Mvpmetrics = () => {
 
   return (
     <>
-      <div className='searchBar'>
-        <label>Please enter your Username and select a public Repository</label>
-        <form onSubmit={handleSubmit}>
-          <input
-            type='text'
-            placeholder='Enter GitHub Username'
-            id='username'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-          {repos.length > 0 && (
-            <select value={selectedRepo} onChange={handleRepoChange}>
-              <option value=''>Select a repository</option>
-              {repos.map(repo => (
-                <option key={repo.name} value={repo.url}>
-                  {repo.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <button type='submit'>Submit</button>
-        </form>
-      </div>
+      <Navbar className='bg-body-tertiary'>
+        <Container>
+          <Navbar.Brand href='/'>
+            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+          </Navbar.Brand>
+          <Navbar.Toggle />
+          <Navbar.Collapse className='justify-content-end'>
+            <Navbar.Text style={{ marginRight: '30px' }}>
+              Signed in as: <a href='#login'>{username}</a>
+            </Navbar.Text>
+            <Link to='https://google.com'>
+              <Button
+                variant='primary'
+                size='md'
+                style={{
+                  backgroundColor: 'tomato',
+                  border: 'none',
+                }}
+              >
+                Log Out
+              </Button>
+            </Link>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-      <div className='searchBar'>
-        <label>Please enter your Owner and Repository</label>
-        <form onSubmit={handleSubmitTyped}>
-          <input
-            type='text'
-            placeholder='Enter Owner'
-            id='owner'
-            value={owner}
-            onChange={e => setOwner(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Enter Repository Name'
-            id='repo'
-            value={repo}
-            onChange={e => setRepo(e.target.value)}
-          />
-          <button type='submit'>Submit</button>
-        </form>
-      </div>
+      <Container
+        id='owner-repo-input'
+        className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
+        style={{ paddingTop: '50px' }}
+      >
+        <h1 style={{ fontWeight: 'bold', fontSize: '30px', marginBottom: '20px' }}>
+          Hello, {username}
+        </h1>
+        <Navbar className='justify-content-center'>
+          <Form inline onSubmit={handleSubmitTyped}>
+            <Row className='align-items-center'>
+              <Col xs='auto'>
+                <Form.Control
+                  placeholder='Repo Owner'
+                  aria-label='Owner'
+                  aria-describedby='basic-addon1'
+                  value={owner}
+                  onChange={e => setOwner(e.target.value)}
+                />
+              </Col>
+              <Col xs='auto'>
+                <Form.Control
+                  type='text'
+                  placeholder='Repo Name'
+                  className='mr-sm-2'
+                  value={repo}
+                  onChange={e => setRepo(e.target.value)}
+                />
+              </Col>
+              <Col xs='auto'>
+                <Button variant='success' type='submit'>
+                  Submit
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Navbar>
+        <Alert
+          key={'light'}
+          variant={'light'}
+          style={{ marginTop: '20px', color: 'gray', fontSize: '14px' }}
+        >
+          note: if you'd like to access a repo from an owner other than yourself, you must be apart
+          of that repo on GitHub
+        </Alert>
+      </Container>
 
-      <div className={'grid-container'}>
-        <div className={'viz-a'}>
-          <Bar options={options} data={vertBarChart} />
-        </div>
-        <div className={'viz-b'}>
-          <Pie options={pieOptions} data={pieChart} />
-        </div>
-        <div>
-          <Bar options={horizBarOptions} data={horizBarChart} />
-        </div>
-        <div>
-          <Bar options={comboBarOptions} data={comboBarChart} />
-        </div>
-        <div>
-          <Line options={lineOptions} data={lineChart} />
-        </div>
-        <div>
-          <Bar options={stepBarOptions} data={stepChart} />
-        </div>
+      <div id='contact' className='bg-white py-5'>
+        <Container>
+          <div style={{ paddingBottom: '80px' }}>
+            <h1 className='text-center' style={{ fontWeight: 'bold', fontSize: '30px' }}>
+              Your workflow metrics:
+            </h1>
+          </div>
+          <Row className='align-items-between justify-content-between'>
+            <Col className='gx-4'>
+              <Bar options={options} data={vertBarChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Pie options={pieOptions} data={pieChart} />
+            </Col>
+          </Row>
+          <Row className='align-items-center justify-content-center'>
+            <Col className='gx-4'>
+              <Bar options={horizBarOptions} data={horizBarChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Bar options={comboBarOptions} data={comboBarChart} />
+            </Col>
+          </Row>
+          <Row className='align-items-center justify-content-center'>
+            <Col className='gx-4'>
+              <Line options={lineOptions} data={lineChart} />
+            </Col>
+            <Col className='gx-4'>
+              <Bar options={stepBarOptions} data={stepChart} />
+            </Col>
+          </Row>
+        </Container>
       </div>
     </>
+
+    // <>
+    //   <div className='searchBar'>
+    //     <label>Please enter your Username and select a public Repository</label>
+    //     <form onSubmit={handleSubmit}>
+    //       <input
+    //         type='text'
+    //         placeholder='Enter GitHub Username'
+    //         id='username'
+    //         value={username}
+    //         onChange={e => setUsername(e.target.value)}
+    //       />
+    //       {repos.length > 0 && (
+    //         <select value={selectedRepo} onChange={handleRepoChange}>
+    //           <option value=''>Select a repository</option>
+    //           {repos.map(repo => (
+    //             <option key={repo.name} value={repo.url}>
+    //               {repo.name}
+    //             </option>
+    //           ))}
+    //         </select>
+    //       )}
+    //       <button type='submit'>Submit</button>
+    //     </form>
+    //   </div>
+
+    //   <div className='searchBar'>
+    //     <label>Please enter your Owner and Repository</label>
+    //     <form onSubmit={handleSubmitTyped}>
+    //       <input
+    //         type='text'
+    //         placeholder='Enter Owner'
+    //         id='owner'
+    //         value={owner}
+    //         onChange={e => setOwner(e.target.value)}
+    //       />
+    //       <input
+    //         type='text'
+    //         placeholder='Enter Repository Name'
+    //         id='repo'
+    //         value={repo}
+    //         onChange={e => setRepo(e.target.value)}
+    //       />
+    //       <button type='submit'>Submit</button>
+    //     </form>
+    //   </div>
+
+    //   <div className={'grid-container'}>
+    //     <div className={'viz-a'}>
+    //       <Bar options={options} data={vertBarChart} />
+    //     </div>
+    //     <div className={'viz-b'}>
+    //       <Pie options={pieOptions} data={pieChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={horizBarOptions} data={horizBarChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={comboBarOptions} data={comboBarChart} />
+    //     </div>
+    //     <div>
+    //       <Line options={lineOptions} data={lineChart} />
+    //     </div>
+    //     <div>
+    //       <Bar options={stepBarOptions} data={stepChart} />
+    //     </div>
+    //   </div>
+    // </>
   );
 };
 

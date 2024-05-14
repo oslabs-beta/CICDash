@@ -44,7 +44,7 @@ githubController.auth = async (req, res, next) => {
   // Pass on the user data sent back by Github (ie Username)
   res.locals.apiResponseData = apiResponse.data;
   console.log('  - User data sent back by Github:', apiResponse.data); // CL*
-  console.log('  - User data sent back by Github username hopefully:', apiResponse.data.login); // CL*
+  console.log('  - User data sent back by Github username:', apiResponse.data.login); // CL*
   res.locals.loginUsername = apiResponse.data.login;
   return next();
 };
