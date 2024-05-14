@@ -220,7 +220,7 @@ databaseController.findRuns = async (req, res, next) => {
       },
     });
     console.log(` - Sent existing runs to frontend.`);
-    console.log(`existingRuns:${existingRuns}`);
+    // console.log(`existingRuns:${existingRuns}`);
     // Update res.locals.runIds with unique run IDs
     res.locals.existingRuns = existingRuns;
     return next();
@@ -229,12 +229,13 @@ databaseController.findRuns = async (req, res, next) => {
   }
 };
 //
-databaseController.saveFrontendData = async (req, res, next) => {
-  console.log(`* saveFrontendData...`); // CL*
+
+databaseController.saveUsername = async (req, res, next) => {
+  console.log(`* saving username?...`); // CL*
   try {
     console.log('view this: ', req.body);
-    const { username, repo } = req.body; // Retrieve data from request body
-    res.locals.userAndRepo = { username, repo }; // Store data in res.locals
+    const { username } = req.body; // Retrieve data from request body
+    res.locals.username = { username }; // Store data in res.locals
     return next();
   } catch (error) {
     console.error('Error saving username or repo:', error);
