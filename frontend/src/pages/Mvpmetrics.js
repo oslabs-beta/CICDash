@@ -878,30 +878,30 @@ const Mvpmetrics = () => {
         <Container>
           <div style={{ paddingBottom: '80px' }}>
             <h1 className='text-center' style={{ fontWeight: 'bold', fontSize: '30px' }}>
-              Your metrics:
+              Your workflow metrics:
             </h1>
           </div>
-          <Row className='align-items-center justify-content-center'>
-            <Col>
+          <Row className='align-items-between justify-content-between'>
+            <Col className='gx-4'>
               <Bar options={options} data={vertBarChart} />
             </Col>
-            <Col>
+            <Col className='gx-4'>
               <Pie options={pieOptions} data={pieChart} />
             </Col>
           </Row>
           <Row className='align-items-center justify-content-center'>
-            <Col>
+            <Col className='gx-4'>
               <Bar options={horizBarOptions} data={horizBarChart} />
             </Col>
-            <Col>
+            <Col className='gx-4'>
               <Bar options={comboBarOptions} data={comboBarChart} />
             </Col>
           </Row>
           <Row className='align-items-center justify-content-center'>
-            <Col>
+            <Col className='gx-4'>
               <Line options={lineOptions} data={lineChart} />
             </Col>
-            <Col>
+            <Col className='gx-4'>
               <Bar options={stepBarOptions} data={stepChart} />
             </Col>
           </Row>

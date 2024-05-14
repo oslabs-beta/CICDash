@@ -198,12 +198,11 @@ const Home = () => {
         className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
         style={{ paddingTop: '130px', paddingBottom: '250px' }}
       >
-        <h1 style={{ fontWeight: 'bold', fontSize: '50px' }}>
-          Metrics Visualization for GitHub Actions
-        </h1>
+        <h1 style={{ fontWeight: 'bold', fontSize: '50px' }}>Medium Article Section</h1>
         <p style={{ marginTop: '20px', fontSize: '26px', color: 'gray' }}>
-          Gain actionable insights on any workflow, any job, any step, from anytime.
+          Explain the app high-level and link to medium article
         </p>
+        <Link to='https://medium.com/@arthurtcheung'>Learn More</Link>
       </Container>
 
       <Footer />
