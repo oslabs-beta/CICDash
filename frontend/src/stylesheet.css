@@ -41,3 +41,10 @@
   background-color: white;
   box-shadow: 0 4px 50px rgba(0, 0, 0, 0.2);
 }
+
+.small-pie-chart {
+  width: 100%; /* Ensures it takes up the full width of the column */
+  max-width: 300px; /* Maximum width you want for the PieChart */
+  height: auto; /* Adjust height to maintain aspect ratio */
+  margin: 0 auto; /* Center the chart */
+}
