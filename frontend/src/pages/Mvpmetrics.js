@@ -350,7 +350,7 @@ export const options = {
 
 //Pie
 export const pieOptions = {
-  aspectRatio: 0.9,
+  height: 10,
   plugins: {
     legend: {
       position: 'top',
@@ -407,11 +407,11 @@ export const horizBarOptions = {
 };
 
 export const horizBarData = {
-  labels: chartData.labels.reverse(),
+  labels: chartData.labels,
   datasets: [
     {
       label: '2024',
-      data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
+      data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
       borderColor: transparentize(CHART_COLORS.blue, 0.5),
       backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
     },
@@ -675,11 +675,11 @@ const Mvpmetrics = () => {
       },
     });
     setHorizBarChart({
-      labels: chartData.labels.reverse(),
+      labels: chartData.labels,
       datasets: [
         {
           label: '2024',
-          data: chartData.horizBarData.reverse(), //Month avg workflow run - Lifetime avg workflow run (seconds)
+          data: chartData.horizBarData, //Month avg workflow run - Lifetime avg workflow run (seconds)
           borderColor: transparentize(CHART_COLORS.blue, 0.5),
           backgroundColor: transparentize(CHART_COLORS.blue, 0.5),
         },
@@ -801,7 +801,7 @@ const Mvpmetrics = () => {
 
   return (
     <>
-      <Navbar className='bg-body-tertiary'>
+      <Navbar className='bg-body-tertiary' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
             <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
@@ -811,7 +811,7 @@ const Mvpmetrics = () => {
             <Navbar.Text style={{ marginRight: '30px' }}>
               Signed in as: <a href='#login'>{username}</a>
             </Navbar.Text>
-            <Link to='https://google.com'>
+            <Link to='/'>
               <Button
                 variant='primary'
                 size='md'
@@ -832,7 +832,9 @@ const Mvpmetrics = () => {
         className='text-center d-flex flex-column justify-content-center align-items-center position-relative' // Add flexbox classes
         style={{ paddingTop: '50px' }}
       >
-        <h1 style={{ fontWeight: 'bold', fontSize: '30px', marginBottom: '20px' }}>
+        <h1
+          style={{ fontWeight: 'bold', fontSize: '30px', marginBottom: '20px', marginTop: '50px' }}
+        >
           Hello, {username}
         </h1>
         <Navbar className='justify-content-center'>
@@ -874,108 +876,45 @@ const Mvpmetrics = () => {
         </Alert>
       </Container>
 
-      <div id='contact' className='bg-white py-5'>
+      <div id='charts' className='bg-white py-5'>
         <Container>
           <div style={{ paddingBottom: '80px' }}>
             <h1 className='text-center' style={{ fontWeight: 'bold', fontSize: '30px' }}>
               Your workflow metrics:
             </h1>
           </div>
-          <Row className='align-items-between justify-content-between'>
-            <Col className='gx-4'>
+          <Row>
+            <Col className='gx-8'>
               <Bar options={options} data={vertBarChart} />
             </Col>
-            <Col className='gx-4'>
-              <Pie options={pieOptions} data={pieChart} />
+            {/* <Col className='gx-6'></Col> */}
+            <Col className='gx-8'>
+              <div className='small-pie-chart'>
+                <Pie options={pieOptions} data={pieChart} />
+              </div>
             </Col>
           </Row>
           <Row className='align-items-center justify-content-center'>
-            <Col className='gx-4'>
+            <Col className='gx-6'>
               <Bar options={horizBarOptions} data={horizBarChart} />
             </Col>
-            <Col className='gx-4'>
+            <Col className='gx-6'>
               <Bar options={comboBarOptions} data={comboBarChart} />
             </Col>
           </Row>
           <Row className='align-items-center justify-content-center'>
-            <Col className='gx-4'>
+            <Col className='gx-6'>
               <Line options={lineOptions} data={lineChart} />
             </Col>
-            <Col className='gx-4'>
+          </Row>
+          <Row className='align-items-center justify-content-center'>
+            <Col className='gx-6'>
               <Bar options={stepBarOptions} data={stepChart} />
             </Col>
           </Row>
         </Container>
       </div>
     </>
-
-    // <>
-    //   <div className='searchBar'>
-    //     <label>Please enter your Username and select a public Repository</label>
-    //     <form onSubmit={handleSubmit}>
-    //       <input
-    //         type='text'
-    //         placeholder='Enter GitHub Username'
-    //         id='username'
-    //         value={username}
-    //         onChange={e => setUsername(e.target.value)}
-    //       />
-    //       {repos.length > 0 && (
-    //         <select value={selectedRepo} onChange={handleRepoChange}>
-    //           <option value=''>Select a repository</option>
-    //           {repos.map(repo => (
-    //             <option key={repo.name} value={repo.url}>
-    //               {repo.name}
-    //             </option>
-    //           ))}
-    //         </select>
-    //       )}
-    //       <button type='submit'>Submit</button>
-    //     </form>
-    //   </div>
-
-    //   <div className='searchBar'>
-    //     <label>Please enter your Owner and Repository</label>
-    //     <form onSubmit={handleSubmitTyped}>
-    //       <input
-    //         type='text'
-    //         placeholder='Enter Owner'
-    //         id='owner'
-    //         value={owner}
-    //         onChange={e => setOwner(e.target.value)}
-    //       />
-    //       <input
-    //         type='text'
-    //         placeholder='Enter Repository Name'
-    //         id='repo'
-    //         value={repo}
-    //         onChange={e => setRepo(e.target.value)}
-    //       />
-    //       <button type='submit'>Submit</button>
-    //     </form>
-    //   </div>
-
-    //   <div className={'grid-container'}>
-    //     <div className={'viz-a'}>
-    //       <Bar options={options} data={vertBarChart} />
-    //     </div>
-    //     <div className={'viz-b'}>
-    //       <Pie options={pieOptions} data={pieChart} />
-    //     </div>
-    //     <div>
-    //       <Bar options={horizBarOptions} data={horizBarChart} />
-    //     </div>
-    //     <div>
-    //       <Bar options={comboBarOptions} data={comboBarChart} />
-    //     </div>
-    //     <div>
-    //       <Line options={lineOptions} data={lineChart} />
-    //     </div>
-    //     <div>
-    //       <Bar options={stepBarOptions} data={stepChart} />
-    //     </div>
-    //   </div>
-    // </>
   );
 };
 
