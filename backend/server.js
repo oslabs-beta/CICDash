@@ -22,6 +22,19 @@ console.log(
 const authRoutes = require('./routes/authRoutes.js');
 const githubRoutes = require('./routes/githubRoutes.js');
 
+// Serve static files from the 'dist' directory
+app.use('/', express.static(path.resolve(__dirname, '../build')));
+app.use('/', () => console.log('HELLO'));
+// path.resolve(__dirname, 'build'));
+
+// Set MIME type for JavaScript files
+app.use((req, res, next) => {
+  if (req.url.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  }
+  next();
+});
+
 // Handle parsing the JSON body of every req and parsing the cookies of every req
 app.use(cors());
 app.use(express.json());
