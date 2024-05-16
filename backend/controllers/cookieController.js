@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const cookieController = {};
 
-// Set session cookie.
+// Set session cookie
 cookieController.setCookie = async (req, res, next) => {
   console.log('* Setting session cookies...');
 
