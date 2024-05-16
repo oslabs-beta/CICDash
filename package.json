@@ -8,7 +8,8 @@
     "format": "prettier --write .",
     "start": "webpack serve --open",
     "dev": "concurrently \"webpack serve --open\" \"nodemon ./backend/server.js\"",
-    "launch": "npm install && webpack"
+    "launch": "npm install && webpack",
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",
