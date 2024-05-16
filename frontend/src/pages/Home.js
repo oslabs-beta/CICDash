@@ -222,7 +222,9 @@ const Home = () => {
           Read our Medium article to learn more about the problem we're tackling and how we landed
           on the idea
         </p>
-        <Link to='https://medium.com/@arthurtcheung'>Learn More</Link>
+        <Link to='https://medium.com/@russell1740/cicdeez-a-github-actions-metrics-dashboard-00b600393709'>
+          Learn More
+        </Link>
       </Container>
 
       <Footer />
