@@ -41,6 +41,8 @@ mongoose
   .then(() => console.log('* Connected to Mongo DB')) // CL*
   .catch(err => console.log(err));
 
+app.use(express.static(path.join(__dirname, '../frontend/assets' )));
+
 // Route handlers
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../frontend/public/index.html')));
 app.use('/auth', authRoutes);
