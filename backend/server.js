@@ -44,7 +44,7 @@ mongoose
 app.use(express.static(path.join(__dirname, '../frontend/assets' )));
 
 // Route handlers
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../frontend/public/index.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../build/index.html')));
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
 
