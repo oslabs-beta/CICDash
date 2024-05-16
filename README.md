@@ -9,7 +9,8 @@ By storing a history of your GitHub workflow metrics, trends can be more easily 
   - For more information, please reference our website and medium article
 
 ## Getting started
-  - CICDEEZ requires a working GitHub Actions (GHA) enabled repository. If you need help setting that up, please refer to GitHub's documentation: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
+  - CICDEEZ requires a working GitHub Actions (GHA) enabled repository.
+  - If you need help setting that up, please refer to GitHub's documentation: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 Otherwise, please proceed with the following steps to visualize GitHub workflow data with CICDEEZ.
 
 
