@@ -42,6 +42,7 @@ mongoose
   .catch(err => console.log(err));
 
 // Route handlers
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../frontend/public/index.html')));
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
 
