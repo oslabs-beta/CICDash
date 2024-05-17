@@ -41,10 +41,8 @@ mongoose
   .then(() => console.log('* Connected to Mongo DB')) // CL*
   .catch(err => console.log(err));
 
-app.use(express.static(path.join(__dirname, '../frontend/assets' )));
-
 // Route handlers
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../build/index.html')));
+app.use('/', express.static(path.resolve(__dirname, '../build')));
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
 
