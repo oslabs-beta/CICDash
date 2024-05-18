@@ -1,0 +1,37 @@
+# Telling docker-compose to build the client and server images and run them in containers.
+services:
+  client:
+    # Telling docker-compose to build the client image using the Dockerfile in the client directory.
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+    env_file:
+      - .env
+    # Giving the container a name.
+    container_name: clientapp_c
+    # Mapping the port 3000 on the host machine to the port 3000 on the container.
+    ports:
+      - '8081:8080'
+    # Mapping the client directory on the host machine to the /app directory on the container.
+    volumes:
+      - ./frontend:/app/frontend
+      - ./webpack.config.js:/app/webpack.config.js
+      - ./package.json:/app/package.json
+    # Allows you to run container in detached mode.
+    stdin_open: true
+    tty: true
+  server:
+    # Telling docker-compose to build the client image using the Dockerfile in the server directory.
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    env_file:
+      - .env
+    container_name: serverapp_c
+    ports:
+      - '3001:3000'
+    volumes:
+      - ./backend:/app/backend
+      - ./package.json:/app/package.json
+    stdin_open: true
+    tty: true
