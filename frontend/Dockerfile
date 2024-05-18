@@ -1,23 +1,27 @@
 # Use an official Node.js runtime as the base image
-FROM node:17-alpine
+FROM node:16-alpine
 
-# Set the working directory in the container to /app
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the package.json file from the root directory into the container at /app
-COPY ./frontend/package.json .
+# Copy package.json and package-lock.json from the root directory to the working directory
+COPY ./package.json ./
 
-# Install npm dependencies
+# Copy the webpack configuration file
+COPY ./webpack.config.js ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the frontend code from the frontend directory into the container at /app
-COPY . .
+# Copy the rest of the application files from the root directory to the working directory
+COPY ./frontend ./
 
-# Expose port 3000 to allow communication to/from server
+# Expose the port that your app runs on
 EXPOSE 8080
 
-# Command to run your application
-CMD ["npm", "build"]
+# Define the command to run your app
+CMD ["npm", "run", "build"]
 
-# Command to run your application
-CMD ["npm", "start"]
+# Define the command to run your app
+CMD ["npm", "start"] 
+
