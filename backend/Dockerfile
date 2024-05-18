@@ -20,4 +20,4 @@ COPY ./backend ./
 EXPOSE 3000
 
 # Define the command to run your app
-CMD ["npm", "run", "dockerserver"]
+CMD ["npm", "run", "server"]
