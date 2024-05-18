@@ -13,7 +13,7 @@ router.use(
   cookieController.setCookie,
   databaseController.registerUser,
   (req, res, next) => {
-    res.redirect('https://fhivj9pnkg.us-east-2.awsapprunner.com/results');
+    res.json({ redirectUrl: '/results' });
     return next();
   },
 );
