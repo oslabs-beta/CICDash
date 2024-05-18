@@ -13,7 +13,7 @@ router.use(
   cookieController.setCookie,
   databaseController.registerUser,
   (req, res, next) => {
-    res.json({ redirectUrl: '/results' });
+    res.redirect('/results');
     return next();
   },
 );
