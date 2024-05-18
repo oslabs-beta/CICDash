@@ -763,7 +763,7 @@ const Mvpmetrics = () => {
   async function fetchData() {
     console.log('Fetching runs from db ...');
     try {
-      let findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+      let findJobs = await axios.get('https://fhivj9pnkg.us-east-2.awsapprunner.com/api/github/findRuns', {
         withCredentials: true,
         params: {
           owner: owner,
