@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
 
 // Assets
-import logo from '/frontend/assets/cicdeez_logo_h.png';
+import logo from '/frontend/assets/FlowMetrics_logo_h.png';
 
 // Chart JS
 import {
