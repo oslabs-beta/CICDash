@@ -804,7 +804,7 @@ const Mvpmetrics = () => {
       <Navbar className='bg-body-tertiary' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
-            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+            <img src={logo} height='40' className='d-inline-block align-top' alt='FlowMetrics Logo' />
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className='justify-content-end'>
