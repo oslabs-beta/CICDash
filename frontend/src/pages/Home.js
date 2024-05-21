@@ -12,7 +12,7 @@ import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
 import Footer from './Footer';
 
 // Assets
-import logo from '/frontend/assets/FlowMetrics_logo_h';
+import logo from '/frontend/assets/FlowMetrics_logo_h.png';
 import mainMan from '/frontend/assets/main_man.png';
 import metricsDummy from '/frontend/assets/enter_owner_repo.gif';
 import graphDemo from '/frontend/assets/graph_demo.gif';
