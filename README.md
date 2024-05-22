@@ -23,7 +23,7 @@ Install FlowMetrics from GitHub Marketplace onto your GHA enabled repo.
 ## Login with Github
 
 
-  - Navigate to cicdmetrics.com to login with your GitHub account to grant access to your Github profile.
+  - Navigate to https://cicdmetrics.com to login with your GitHub account to grant access to your Github profile.
 
 
 # Save Your Repo Data
