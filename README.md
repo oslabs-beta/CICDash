@@ -6,7 +6,7 @@ By storing a history of your GitHub workflow metrics, trends can be more easily 
   - Workflow Runs by Month, Lifetime Workflow Attempts, Average Run Time: Monthly vs Lifetime (seconds) - Two different graphs for this one, Execution Time (seconds), Failure Rate By Job Step
 
 
-  - For more information, please reference our website at www.cicdmetrics.com and medium article "FlowMetrics: A GitHub Actions Metrics Dashboard"
+  - For more information, please reference our website at https://cicdmetrics.com and medium article "FlowMetrics: A GitHub Actions Metrics Dashboard"
 
 ## Getting started
   - FlowMetrics requires a working GitHub Actions (GHA) enabled repository.
