@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
 
 // Assets
-import logo from '/frontend/assets/cicdeez_logo_h.png';
+import logo from '/frontend/assets/FlowMetrics_logo_h.png';
 
 // Chart JS
 import {
@@ -763,7 +763,7 @@ const Mvpmetrics = () => {
   async function fetchData() {
     console.log('Fetching runs from db ...');
     try {
-      let findJobs = await axios.get('http://localhost:3000/api/github/findRuns', {
+      let findJobs = await axios.get('https://fhivj9pnkg.us-east-2.awsapprunner.com/api/github/findRuns', {
         withCredentials: true,
         params: {
           owner: owner,
@@ -804,7 +804,7 @@ const Mvpmetrics = () => {
       <Navbar className='bg-body-tertiary' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
-            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDEEZ Logo' />
+            <img src={logo} height='40' className='d-inline-block align-top' alt='FlowMetrics Logo' />
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className='justify-content-end'>

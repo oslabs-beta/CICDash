@@ -28,12 +28,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Configure CORS to allow requests specifically from 'http://localhost:8080' and allow credentials
-app.use(
-  cors({
-    origin: 'http://localhost:8080',
-    credentials: true, // Enable credentials (cookies, authorization headers) to be sent cross-domain
-  }),
-);
+// app.use(
+//   cors({
+//     origin: 'http://localhost:8080',
+//     credentials: true, // Enable credentials (cookies, authorization headers) to be sent cross-domain
+//   }),
+// );
 
 // Connect to Mongo DB
 mongoose
@@ -42,8 +42,14 @@ mongoose
   .catch(err => console.log(err));
 
 // Route handlers
+// app.use('/', express.static(path.resolve(__dirname, '../build')));
 app.use('/auth', authRoutes);
 app.use('/api/github', githubRoutes);
+
+app.use(express.static(path.join(__dirname, '../build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
+});
 
 // Global error handler
 app.use((err, req, res, next) => {

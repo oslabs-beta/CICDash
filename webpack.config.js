@@ -43,7 +43,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'CICDEEZ',
+      title: 'FlowMetrics',
       template: path.join(__dirname, './frontend/public', 'index.html'),
     }),
   ],

@@ -13,7 +13,7 @@ router.use(
   cookieController.setCookie,
   databaseController.registerUser,
   (req, res, next) => {
-    res.redirect('http://localhost:8080/results');
+    res.redirect('/results');
     return next();
   },
 );
