@@ -763,13 +763,16 @@ const Mvpmetrics = () => {
   async function fetchData() {
     console.log('Fetching runs from db ...');
     try {
-      let findJobs = await axios.get('https://fhivj9pnkg.us-east-2.awsapprunner.com/api/github/findRuns', {
-        withCredentials: true,
-        params: {
-          owner: owner,
-          repo: repo,
+      let findJobs = await axios.get(
+        'https://nkbwda3pzm.us-east-2.awsapprunner.com/api/github/findRuns',
+        {
+          withCredentials: true,
+          params: {
+            owner: owner,
+            repo: repo,
+          },
         },
-      });
+      );
       console.log('findJobs:', findJobs.data[0].runs);
       resetShapedMetrics();
       resetChartData();
@@ -804,7 +807,12 @@ const Mvpmetrics = () => {
       <Navbar className='bg-body-tertiary' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
-            <img src={logo} height='40' className='d-inline-block align-top' alt='FlowMetrics Logo' />
+            <img
+              src={logo}
+              height='40'
+              className='d-inline-block align-top'
+              alt='FlowMetrics Logo'
+            />
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className='justify-content-end'>
