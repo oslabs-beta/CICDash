@@ -764,7 +764,7 @@ const Mvpmetrics = () => {
     console.log('Fetching runs from db ...');
     try {
       let findJobs = await axios.get(
-        'https://nkbwda3pzm.us-east-2.awsapprunner.com/api/github/findRuns',
+        'https://5hqfzupmib.us-east-2.awsapprunner.com/api/github/findRuns',
         {
           withCredentials: true,
           params: {
