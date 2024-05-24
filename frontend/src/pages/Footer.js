@@ -11,7 +11,7 @@ const Footer = () => {
           </div>
           <div className='col-md-6 d-flex justify-content-md-end'>
             <Link
-              to='https://www.linkedin.com/'
+              to='https://www.linkedin.com/company/cicdash/'
               className='text-muted'
               style={{ marginRight: '20px' }}
             >

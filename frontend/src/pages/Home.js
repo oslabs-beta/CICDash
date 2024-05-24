@@ -154,7 +154,7 @@ const Home = () => {
             <Col className='text-center'>
               <img src={arthurPfp} alt='Profile Pic' style={{ width: '130px' }} />
               <p>Arthur Cheung</p>
-              <Link to='https://www.linkedin.com/in/arthurtcheung/'>
+              <Link to='https://www.linkedin.com/company/cicdash/in/arthurtcheung/'>
                 <img
                   src={linkedinLogo}
                   alt='Linkedin Logo'
@@ -168,7 +168,7 @@ const Home = () => {
             <Col className='text-center'>
               <img src={russPfp} alt='Profile Pic' style={{ width: '130px' }} />
               <p>Russ Apolonio</p>
-              <Link to='https://www.linkedin.com/in/russellapolonio/'>
+              <Link to='https://www.linkedin.com/company/cicdash/in/russellapolonio/'>
                 <img
                   src={linkedinLogo}
                   alt='Linkedin Logo'
@@ -182,7 +182,7 @@ const Home = () => {
             <Col className='text-center'>
               <img src={jasonPfp} alt='Profile Pic' style={{ width: '130px' }} />
               <p>Jason Kuroda</p>
-              <Link to='https://www.linkedin.com/in/jasonkuroda/'>
+              <Link to='https://www.linkedin.com/company/cicdash/in/jasonkuroda/'>
                 <img
                   src={linkedinLogo}
                   alt='Linkedin Logo'
@@ -196,7 +196,7 @@ const Home = () => {
             <Col className='text-center'>
               <img src={garrettPfp} alt='Profile Pic' style={{ width: '130px' }} />
               <p>Garrett Zeal</p>
-              <Link to='https://www.linkedin.com/in/garrettzeal/'>
+              <Link to='https://www.linkedin.com/company/cicdash/in/garrettzeal/'>
                 <img
                   src={linkedinLogo}
                   alt='Linkedin Logo'
