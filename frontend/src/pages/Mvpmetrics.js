@@ -6,11 +6,8 @@ import axios from 'axios';
 import { Container, Row, Col, Button, Navbar, Form, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Scroll to specific section functionality
-import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
-
 // Assets
-import logo from '/frontend/assets/FlowMetrics_logo_h.png';
+import logo from '/frontend/assets/CICDash_logo_h.png';
 
 // Chart JS
 import {
@@ -807,12 +804,7 @@ const Mvpmetrics = () => {
       <Navbar className='bg-body-tertiary' fixed='top'>
         <Container>
           <Navbar.Brand href='/'>
-            <img
-              src={logo}
-              height='40'
-              className='d-inline-block align-top'
-              alt='FlowMetrics Logo'
-            />
+            <img src={logo} height='40' className='d-inline-block align-top' alt='CICDash Logo' />
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className='justify-content-end'>
