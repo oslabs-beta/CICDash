@@ -12,7 +12,7 @@ import { HashLink as NavLink } from 'react-router-hash-link'; // Import HashLink
 import Footer from './Footer';
 
 // Assets
-import logo from '/frontend/assets/FlowMetrics_logo_h.png';
+import logo from '/frontend/assets/CICDash_logo_h.png';
 import mainMan from '/frontend/assets/main_man.png';
 import metricsDummy from '/frontend/assets/enter_owner_repo.gif';
 import graphDemo from '/frontend/assets/graph_demo.gif';
@@ -34,7 +34,7 @@ const Home = () => {
               src={logo}
               height='40'
               className='d-inline-block align-top'
-              alt='FlowMetrics Logo'
+              alt='CICDash Logo'
             />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
@@ -107,7 +107,7 @@ const Home = () => {
             <Col xs={12} md={6} className='order-md-1'>
               <h2 style={{ fontWeight: 'bold', fontSize: '35px' }}>Designed for GitHub Actions</h2>
               <p>
-                FlowMetrics was designed to be tightly integrated with the GitHub Actions API.
+                CICDash was designed to be tightly integrated with the GitHub Actions API.
                 Simply sign-in using your GitHub account and input the owner and desired repo to
                 pull your saved workflow data from.
               </p>
@@ -121,7 +121,7 @@ const Home = () => {
           <Row className='align-items-center'>
             <Col xs={12} md={6} className='order-md-2'>
               <h2 style={{ fontWeight: 'bold', fontSize: '35px' }}>
-                Gain Actionable Insights on Your Workflow Data
+                Gain Actionable Insights on Your GitHub Actions Workflow Data
               </h2>
               <p>
                 Our metrics page features interactive bar graphs, pie charts, and line charts for
@@ -131,7 +131,7 @@ const Home = () => {
               </p>
             </Col>
             <Col xs={12} md={6} className='order-md-1'>
-              <img src={graphDemo} className='img-fluid' alt='Metrics Dummy' />
+              <img src={graphDemo} className='img-fluid' alt='Graph Demo GIF' />
             </Col>
           </Row>
         </Container>
@@ -147,7 +147,7 @@ const Home = () => {
               className='text-center'
               style={{ marginTop: '20px', fontSize: '20px', color: 'gray' }}
             >
-              FlowMetrics was developed by our distributed team of engineers from NYC and LA
+              CICDash was developed by our distributed team of engineers from NYC and LA
             </p>
           </div>
           <Row className='align-items-center justify-content-center'>
@@ -214,13 +214,13 @@ const Home = () => {
       <Container
         id='learn-more'
         className='text-center d-flex flex-column justify-content-center align-items-center position-relative'
-        style={{ paddingTop: '130px', paddingBottom: '150px' }}
+        style={{ paddingTop: '50px', paddingBottom: '150px' }}
       >
         <h2 style={{ fontWeight: 'bold', fontSize: '35px' }}>
           Providing Insights for Modern-Day CICD Pipelines
         </h2>
         <p style={{ marginTop: '20px', fontSize: '20px', color: 'gray' }}>
-          FlowMetrics is a workflow data visualization platform that utilizes Chart.js to provide a
+          CICDash is a workflow data visualization platform that utilizes Chart.js to provide a
           free, lightweight tool for software engineers.
         </p>
         <p style={{ marginTop: '20px', fontSize: '20px', color: 'gray' }}>

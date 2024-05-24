@@ -7,7 +7,7 @@ const Footer = () => {
       <div className='container'>
         <div className='row'>
           <div className='col-md-6'>
-            <span className='text-muted'>© 2024 FlowMetrics™. All rights reserved.</span>
+            <span className='text-muted'>© 2024 CICDash™. All rights reserved.</span>
           </div>
           <div className='col-md-6 d-flex justify-content-md-end'>
             <Link
@@ -17,7 +17,7 @@ const Footer = () => {
             >
               LinkedIn
             </Link>
-            <Link to='https://github.com/oslabs-beta/FlowMetrics' className='text-muted'>
+            <Link to='https://github.com/oslabs-beta/CICDash' className='text-muted'>
               GitHub
             </Link>
           </div>
