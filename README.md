@@ -14,11 +14,11 @@ By storing a history of your GitHub workflow metrics, trends can be more easily 
 Otherwise, please proceed with the following steps to visualize GitHub workflow data with FlowMetrics.
 
 
-## Install FlowMetrics
+## Install FlowMetrics From GitHub Marketplace
 
 
   - Ensure your repository is enabled for GitHub Actions. If not, please enable GitHub Actions in your repository settings. 
-Install FlowMetrics from GitHub Marketplace onto your GHA enabled repo.
+Install FlowMetrics from GitHub Marketplace onto your GHA enabled repo: https://github.com/apps/cicdflowmetrics
 
 ## Login with Github
 
