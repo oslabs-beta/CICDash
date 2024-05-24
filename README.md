@@ -6,7 +6,7 @@ By storing a history of your GitHub workflow metrics, trends can be more easily 
   - Workflow Runs by Month, Lifetime Workflow Attempts, Average Run Time: Monthly vs Lifetime (seconds) - Two different graphs for this one, Execution Time (seconds), Failure Rate By Job Step
 
 
-  - For more information, please reference our website at https://cicdmetrics.com and medium article "CICDash: An Open Source GitHub Actions Metrics Dashboard"
+  - For more information, please reference our website at https://www.cicdash.com and medium article "CICDash: An Open Source GitHub Actions Metrics Dashboard"
 
 ## Getting started
   - CICDash requires a working GitHub Actions (GHA) enabled repository.
@@ -23,7 +23,7 @@ Install CICDash from GitHub Marketplace onto your GHA enabled repo.
 ## Login with Github
 
 
-  - Navigate to https://cicdmetrics.com to login with your GitHub account to grant access to your Github profile.
+  - Navigate to https://www.cicdash.com to login with your GitHub account to grant access to your Github profile.
 
 
 # Save Your Repo Data
